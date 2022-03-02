@@ -24,6 +24,13 @@ interface Context {
     push: (t: Token) => void;
     getIndexSource: (i: number) => string;
 }
+interface TokenizerLinkReturnType {
+    addTokenizer(t: ParseToken): TokenizerLinkReturnType;
+    runParse(): Array<Token>;
+}
+interface TokenizerLink {
+    (source: string): TokenizerLinkReturnType
+}
 
 class LinkNode {
     constructor(public context: Context, public _parse?: ParseToken, public next?: LinkNode) {
@@ -47,8 +54,7 @@ class LinkNode {
         }
     }
 }
-
-const tokenizerLink = (source: string) => {
+const tokenizerLink: TokenizerLink = (source: string) => {
     const tokens: Array<Token> = []
     const context: Context = {
         index: 0,
@@ -78,6 +84,30 @@ const tokenizerLink = (source: string) => {
     };
 };
 
+const enterTokenizer: ParseToken = (context: Context) => {
+    return {
+        resole() {
+            let newIndex = context.index;
+            let next = context.getIndexSource(newIndex);
+            let value = "";
+            while (next && next === "\n") {
+                value += next;
+                next = context.getIndexSource(++newIndex);
+            }
+            return {
+                newIndex,
+                ordIndex: context.index,
+                value
+            }
+        },
+        addToken(value) {
+            context.push({
+                type: 'name',
+                ...value
+            });
+        },
+    };
+};
 const numberTokenizer: ParseToken = (context: Context) => {
     return {
         //用于解析是否为这个token需要解析
@@ -164,7 +194,7 @@ const spaceTokenizer: ParseToken = (context: Context) => {
     };
 };
 const nameTokenizer: ParseToken = (context: Context) => {
-    const ignore = [" ", "'"];
+    const ignore = [" ", "'", "\n"];
     return {
         resole() {
             let newIndex = context.index;
@@ -192,8 +222,10 @@ const nameTokenizer: ParseToken = (context: Context) => {
 
 export const tokenizer = (source: string) => {
     const parse = tokenizerLink(source);
-    parse.addTokenizer(stringTokenizer)
+    parse
         .addTokenizer(spaceTokenizer)
+        .addTokenizer(enterTokenizer)
+        .addTokenizer(stringTokenizer)
         .addTokenizer(numberTokenizer)
         .addTokenizer(nameTokenizer);
     return () => parse.runParse();
