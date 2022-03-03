@@ -1,9 +1,8 @@
 const { defineLentConfig } = require('lent');
-const { lentLeetCodePlugin } = require('lentleetcodeplugin')
 
 module.exports = defineLentConfig({
     root: './src',
+    port: 3055,
     plugin(i) {
-        lentLeetCodePlugin(i);
     }
 });
