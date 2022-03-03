@@ -11,7 +11,7 @@ interface ParseToken {
         addToken: (v: Omit<Token, "type">) => void;
     }
 }
-interface Token {
+export interface Token {
     type: string;
     value: string;
     start: number;
