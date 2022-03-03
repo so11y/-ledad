@@ -1,5 +1,6 @@
 
 import { Token } from "./tokenizer";
+import { VariableDeclarationParse } from "./variableDeclaration";
 
 export abstract class Ast {
     start: number = 0;
@@ -11,47 +12,81 @@ export interface AstConstructor {
     new(): Ast;
 }
 
-interface Context {
-    eat: (start: number, end: number) => void;
+interface ParseContext {
+    eat: (start: number, end: number) => Token[];
+    getToken(): {
+        getIndex(): number;
+        next(): Token;
+    };
+    addParseToken(t: KeywordParse): any;
+    walk(current: Token): Ast;
+    runParse(): {
+        type: string;
+        body: Ast[];
+    };
+}
 
+export interface ParseTransform {
+    (token: Token, context: ParseContext): Ast | null;
 }
 
 interface KeywordParse {
     kind: string;
-    transform: (context: Context) => Ast;
+    transform: ParseTransform;
 }
 
-export const parse = (tokens: Array<Token>) => {
+const composeParse = (tokens: Array<Token>) => {
     const copyTokens = tokens.slice(0);
     const keyWordMap = new Map<string, KeywordParse>();
 
     const ast = {
         type: "Program",
-        body: [] as Ast[]
+        body: [] as Ast[],
+
     }
 
     const parseContext = {
         eat: (start: number, end: number) => {
-            copyTokens.splice(start, end);
-        }
-    }
-
-    function addParseToken(t: KeywordParse) {
-        keyWordMap.set(t.kind, t);
-        return this;
-    }
-    function runParse() {
-        while (copyTokens.length) {
-            const current = copyTokens.shift();
-            if (keyWordMap.has(current.value)) {
-                const createAST = keyWordMap.get(current.value).transform(parseContext);
-                ast.body.push(createAST);
+            return copyTokens.splice(start, end);
+        },
+        getToken() {
+            let index = 0;
+            return {
+                getIndex() {
+                    return index;
+                },
+                next() {
+                    return copyTokens[index++];
+                }
             }
-        }
+        },
+        addParseToken(t: KeywordParse) {
+            keyWordMap.set(t.kind, t);
+            return this;
+        },
+        walk(current: Token) {
+            if (keyWordMap.has(current.value)) {
+                const createAST = keyWordMap.get(current.value).transform(current, parseContext);
+                return createAST;
+            }
+        },
+        runParse() {
+            while (copyTokens.length) {
+                const current = copyTokens.shift();
+                const node = this.walk(current);
+                if (node) {
+                    ast.body.push(node);
+                }
+            }
+            return ast
+        },
     }
 
-    return {
-        addParseToken,
-        runParse
-    }
+    return parseContext
+}
+
+export const parse = (tokens: Array<Token>) => {
+    const p = composeParse(tokens);
+    p.addParseToken(VariableDeclarationParse)
+    return () => p.runParse()
 }

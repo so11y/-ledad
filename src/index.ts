@@ -1,6 +1,12 @@
 import { tokenizer } from "./tokenizer";
+import { parse } from "./parse";
 
 
-let r = tokenizer(`let a = 10;`);
+let t = tokenizer(`let a = 10;`);
+let tokens = t();
 
-console.log(r());
+let parseContext = parse(tokens);
+
+let ast = parseContext();
+
+console.log(ast);
