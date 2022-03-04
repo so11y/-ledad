@@ -54,7 +54,7 @@ class LinkNode {
         }
     }
 }
-const includeDot = [",", "{", "}", "[", "]", "(", ")"];
+const includeDot = [",", "{", "}", "[", "]", "(", ")",":"];
 const nameIgnore = [" ", "'", "\n", ",", ...includeDot];
 
 const tokenizerLink: TokenizerLink = (source: string) => {
@@ -258,5 +258,5 @@ export const tokenizer = (source: string) => {
         .addTokenizer(numberTokenizer)
         .addTokenizer(dotTokenizer)
         .addTokenizer(nameTokenizer);
-    return () => parse.runParse();
+    return parse.runParse();
 }

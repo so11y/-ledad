@@ -74,5 +74,5 @@ export const parse = (tokens: Array<Token>) => {
     .addParseToken(VariableDeclarationParseLet)
     .addParseToken(VariableDeclarationParseVar)
     .addParseToken(FunctionDeclarationParse)
-    return () => p.runParse()
+    return  p.runParse()
 }
