@@ -8,11 +8,7 @@ import { tokensTake } from "./tokensHelps";
 
 interface ParseContext {
     eat: (start: number, end: number) => Token[];
-    getToken(): {
-        getIndex(): number;
-        next(): Token;
-        prev(): Token;
-    };
+    getToken(): ReturnType<typeof tokensTake>;
     addParseToken(t: KeywordParse): ParseContext;
     walk(current: Token): Ast;
     runParse(): {

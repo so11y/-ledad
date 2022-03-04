@@ -3,7 +3,7 @@ import { parse } from "./parse";
 
 
 let t = tokenizer(`let a = 15;
-function good(){
+function good(a,b){
 
 }
 `);
@@ -16,3 +16,4 @@ let parseContext = parse(tokens);
 let ast = parseContext();
 
 console.log(ast);
+

@@ -45,7 +45,7 @@ export class Literal extends Ast  {
 }
 
 export class BlockStatement extends Ast {
-    body: Array<Ast>;
+    body: Array<Ast> = [];
     type = "BlockStatement";
 }
 
@@ -54,8 +54,13 @@ export class FunctionDeclaration extends Ast {
     id: Identifier;
     generator: boolean = false;
     async: boolean = false;
-    params: Array<Identifier>;
+    params: Array<Identifier> = [];
     body: BlockStatement;
+
+    initializeLoc(start:number,end:number){
+        this.start = start;
+        this.end = end;
+    }
 }
 
 export class VariableDeclarator {
