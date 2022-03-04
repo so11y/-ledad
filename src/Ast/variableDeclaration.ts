@@ -70,10 +70,10 @@ export const genVariableDeclaration: ParseTransform = (token, context) => {
     const isSpace = t.next();
     const isVariable = t.next();
     if (isSpace.type !== "space") {
-        throw new SyntaxError('let after need token type is space');
+        throw new SyntaxError(`${token.value} after need token type is space`);
     }
     if (isVariable.type !== "name") {
-        throw new SyntaxError('let after need token type is variable');
+        throw new SyntaxError(`${token.value} after need token type is variable`);
     }
     let isEnd = t.next();
 
