@@ -6,11 +6,9 @@ let tokens = tokenizer(`let a = { a : 1 ,b:'2'};`);
 
 console.log(tokens);
 
-// let tokens = t();
+let ast = parse(tokens);
 
-// console.log(tokens);
-// let parseContext = parse(tokens);
-
+console.log(ast);
 // let ast = parseContext();
 
 // console.log(ast);

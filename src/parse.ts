@@ -2,6 +2,7 @@
 import { Token } from "./tokenizer";
 import {Ast} from "./AstTypes/ast";
 import { FunctionDeclarationParse} from "./Ast/functionDeclaration";
+import { ObjectExpressionParse} from "./Ast/objectExpression";
 import { VariableDeclarationParseConst,VariableDeclarationParseLet,VariableDeclarationParseVar } from "./Ast/variableDeclaration";
 import { tokensTake } from "./tokensHelps";
 
@@ -74,5 +75,6 @@ export const parse = (tokens: Array<Token>) => {
     .addParseToken(VariableDeclarationParseLet)
     .addParseToken(VariableDeclarationParseVar)
     .addParseToken(FunctionDeclarationParse)
+    .addParseToken(ObjectExpressionParse)
     return  p.runParse()
 }
