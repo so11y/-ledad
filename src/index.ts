@@ -2,7 +2,10 @@ import { tokenizer } from "./tokenizer";
 import { parse } from "./parse";
 
 
-let tokens = tokenizer(`let a = { a : 1 ,b:'2'};`);
+let tokens = tokenizer(`
+let a = 10 , b = 20;
+const aa = 110 , bb = 20;
+`);
 
 console.log(tokens);
 

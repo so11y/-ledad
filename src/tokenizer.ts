@@ -54,7 +54,7 @@ class LinkNode {
         }
     }
 }
-const includeDot = [",", "{", "}", "[", "]", "(", ")",":"];
+const includeDot = [",", "{", "}", "[", "]", "(", ")",":","="];
 const nameIgnore = [" ", "'", "\n", ",", ...includeDot];
 
 const tokenizerLink: TokenizerLink = (source: string) => {
