@@ -54,6 +54,9 @@ class LinkNode {
         }
     }
 }
+const includeDot = [",", "{", "}", "[", "]", "(", ")"];
+const nameIgnore = [" ", "'", "\n", ",", ...includeDot];
+
 const tokenizerLink: TokenizerLink = (source: string) => {
     const tokens: Array<Token> = []
     const context: Context = {
@@ -193,14 +196,40 @@ const spaceTokenizer: ParseToken = (context: Context) => {
         },
     };
 };
-const nameTokenizer: ParseToken = (context: Context) => {
-    const ignore = [" ", "'", "\n"];
+const dotTokenizer: ParseToken = (context: Context) => {
+
     return {
         resole() {
             let newIndex = context.index;
             let next = context.getIndexSource(newIndex);
             let value = "";
-            while (next && ignore.every(v => next !== v)) {
+            if (includeDot.includes(next)) {
+                value = next;
+                newIndex++;
+            }
+
+            return {
+                newIndex,
+                ordIndex: context.index,
+                value
+            }
+        },
+        addToken(value) {
+            context.push({
+                type: 'symbol',
+                ...value,
+            });
+        },
+    };
+};
+const nameTokenizer: ParseToken = (context: Context) => {
+
+    return {
+        resole() {
+            let newIndex = context.index;
+            let next = context.getIndexSource(newIndex);
+            let value = "";
+            while (next && nameIgnore.every(v => next !== v)) {
                 value += next;
                 next = context.getIndexSource(++newIndex);
             }
@@ -227,6 +256,7 @@ export const tokenizer = (source: string) => {
         .addTokenizer(enterTokenizer)
         .addTokenizer(stringTokenizer)
         .addTokenizer(numberTokenizer)
+        .addTokenizer(dotTokenizer)
         .addTokenizer(nameTokenizer);
     return () => parse.runParse();
 }

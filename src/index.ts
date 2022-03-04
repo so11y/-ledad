@@ -2,9 +2,15 @@ import { tokenizer } from "./tokenizer";
 import { parse } from "./parse";
 
 
-let t = tokenizer(`let a = 10;`);
+let t = tokenizer(`let a = 15;
+function good(){
+
+}
+`);
+
 let tokens = t();
 
+console.log(tokens);
 let parseContext = parse(tokens);
 
 let ast = parseContext();
