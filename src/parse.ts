@@ -1,8 +1,8 @@
 
 import { Token } from "./tokenizer";
-import {Ast} from "./ast";
-import { FunctionDeclarationParse} from "./functionDeclaration";
-import { VariableDeclarationParseConst,VariableDeclarationParseLet,VariableDeclarationParseVar } from "./variableDeclaration";
+import {Ast} from "./AstTypes/ast";
+import { FunctionDeclarationParse} from "./Ast/functionDeclaration";
+import { VariableDeclarationParseConst,VariableDeclarationParseLet,VariableDeclarationParseVar } from "./Ast/variableDeclaration";
 import { tokensTake } from "./tokensHelps";
 
 

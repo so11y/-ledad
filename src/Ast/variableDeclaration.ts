@@ -1,7 +1,9 @@
-import { ParseTransform } from "./parse";
-import { Identifier, Literal, VariableDeclaration, VariableDeclarator } from "./ast";
-import { Token } from "./tokenizer";
-import { createDumbTokens, tokensTake } from "./tokensHelps";
+import { ParseTransform } from "../parse";
+import { Identifier } from "../AstTypes/Identifier";
+import { Literal } from "../AstTypes/Literal";
+import { VariableDeclarator,VariableDeclaration } from "../AstTypes/VariableDeclaration"
+import { Token } from "../tokenizer";
+import { createDumbTokens, tokensTake } from "../tokensHelps";
 
 
 const cratedVariableDeclarator = (tokens: Array<Token>) => {

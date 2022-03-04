@@ -1,6 +1,8 @@
-import { BlockStatement, FunctionDeclaration, Identifier } from "./ast";
-import { ParseTransform } from "./parse";
-import { dotTakeSection, getTokenTypes, TokenParseError, TokenParseErrors } from "./tokensHelps";
+import { BlockStatement } from "../AstTypes/BlockStatement";
+import { FunctionDeclaration } from "../AstTypes/FunctionDeclaration";
+import { Identifier } from "../AstTypes/Identifier";
+import { ParseTransform } from "../parse";
+import { dotTakeSection, getTokenTypes, TokenParseError, TokenParseErrors } from "../tokensHelps";
 
 
 const genFunctionDeclaration: ParseTransform = (token, context) => {
