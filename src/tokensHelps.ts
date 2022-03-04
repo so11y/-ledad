@@ -28,7 +28,11 @@ export const tokensTake = (tokens: Array<Token>) => {
         getIndex() {
             return index;
         },
-        prev() {
+        prev(p?:number) {
+            if(p){
+                index-=p
+                return tokens[index++];
+            }
             return tokens[--index];
         },
         next() {

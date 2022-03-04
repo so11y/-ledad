@@ -14,12 +14,13 @@ const cratedVariableDeclarator = (tokens: Array<Token>) => {
     variabledeclarator.initSequence(headToken.start, lastToken.end)
     variabledeclarator.id = identifier;
 
+    console.log("--");
     let identifierName = tokeToken.next();
     if (identifierName.type !== "name") {
         if (headToken.type !== "name") {
             throw new SyntaxError('identifier SyntaxError error');
         }
-        identifierName = tokeToken.prev();
+        identifierName = tokeToken.prev(2);
     }
 
     identifier.initialize(identifierName);

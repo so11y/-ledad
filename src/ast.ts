@@ -27,7 +27,7 @@ export class Identifier extends Ast {
     }
 }
 
-export class Literal extends Ast  {
+export class Literal extends Ast {
     type = "Literal";
     value: string | number;
 
@@ -40,6 +40,10 @@ export class Literal extends Ast  {
     initialize(t: Token) {
         this.start = t.start;
         this.end = t.end;
+        if (t.type === "number") {
+            this.value = Number(t.value);
+            return;
+        }
         this.value = t.value;
     }
 }
@@ -57,7 +61,7 @@ export class FunctionDeclaration extends Ast {
     params: Array<Identifier> = [];
     body: BlockStatement;
 
-    initializeLoc(start:number,end:number){
+    initializeLoc(start: number, end: number) {
         this.start = start;
         this.end = end;
     }

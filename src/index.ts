@@ -2,11 +2,7 @@ import { tokenizer } from "./tokenizer";
 import { parse } from "./parse";
 
 
-let t = tokenizer(`let a = 15;
-function good(a,b){
-
-}
-`);
+let t = tokenizer(`let a = 15;`);
 
 let tokens = t();
 
