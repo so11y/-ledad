@@ -46,20 +46,20 @@ const cratedVariableDeclarator = (tokens: Array<Token>) => {
 }
 
 const createMultipleVariableDeclarator = (tokens: Array<Token>) => {
-    const multipTokens = [];
+    const multiTokens = [];
     for (let fast = 0, last = 0; last < tokens.length; last++) {
         const lastValue = tokens[last];
         if (lastValue.type === "symbol" && lastValue.value === ",") {
             //添加哑尾节点,用于首次类型判断,以免最后获取到空
-            multipTokens.push([...tokens.slice(fast, last), createDumbTokens(lastValue)]);
+            multiTokens.push([...tokens.slice(fast, last), createDumbTokens(lastValue)]);
             fast = last + 1;
         }
         if (last === tokens.length - 1) {
             //添加哑尾节点,用于首次类型判断,以免最后获取到空
-            multipTokens.push([...tokens.slice(fast, last), createDumbTokens(lastValue)]);
+            multiTokens.push([...tokens.slice(fast, last), createDumbTokens(lastValue)]);
         }
     }
-    return multipTokens.map(v => cratedVariableDeclarator(v))
+    return multiTokens.map(v => cratedVariableDeclarator(v))
 }
 
 export const genVariableDeclaration: ParseTransform = (token, context) => {
