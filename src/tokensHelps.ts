@@ -14,12 +14,8 @@ export class TokenParseError extends SyntaxError {
     }
 }
 
-export const createDumbTokens = (ranks: Pick<Token, "start" | "end">): Token => {
-    return {
-        type: "space",
-        value: " ",
-        ...ranks
-    }
+export const createDumbTokens = (ranks: Partial<Token>): Token => {
+    return Object.assign(ranks, { type: "symbol", start: 0, end: 0, value: "=" })
 }
 
 export const tokensTake = (tokens: Array<Token>) => {
@@ -28,9 +24,9 @@ export const tokensTake = (tokens: Array<Token>) => {
         getIndex() {
             return index;
         },
-        prev(p?:number) {
-            if(p){
-                index-=p
+        prev(p?: number) {
+            if (p) {
+                index -= p
                 return tokens[index++];
             }
             return tokens[--index];
@@ -41,8 +37,18 @@ export const tokensTake = (tokens: Array<Token>) => {
         last() {
             return tokens[tokens.length - 1];
         },
-        init(){
-            index = 0 ;
+        init() {
+            index = 0;
+        },
+        setIndex(i: number) {
+            index = i;
+        },
+        whereToken(whereBack: (token: Token) => boolean) {
+            let isEnd = this.next();
+            while (whereBack(isEnd)) {
+                isEnd = this.next();
+            }
+            return isEnd || false;
         }
     }
 }
@@ -72,6 +78,22 @@ export const dotTakeSection = (dot: DotSymbol, tokens: ReturnType<typeof tokensT
     return [startIndex, tokens.getIndex()];
 }
 
-export const getTokenTypes = (tokens:Array<Token>,type:string)=>{
-    return tokens.filter(v=>v.type === type);
+export const getTokenTypes = (tokens: Array<Token>, type: string) => {
+    return tokens.filter(v => v.type === type);
+}
+
+export const tokenTypeIsName = (token: Token) => {
+    return token.type === "name";
+}
+
+export const tokenTypeIsEqual = (token: Token) => {
+    return isSymbolToken(token, "=");
+}
+
+export const isSymbolToken = (token: Token, value: string) => {
+    return token.type === "symbol" && token.value === value;
+}
+
+export const isSimpleToken = (token: Token) => {
+    return token.type === "string" || token.type === "number";
 }

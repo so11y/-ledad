@@ -1,90 +1,75 @@
-import { ParseTransform } from "../parse";
+import { ParseTransform, TransformContext } from "../parse";
 import { Identifier } from "../AstTypes/Identifier";
 import { Literal } from "../AstTypes/Literal";
-import { VariableDeclarator,VariableDeclaration } from "../AstTypes/VariableDeclaration"
+import { VariableDeclarator, VariableDeclaration } from "../AstTypes/VariableDeclaration"
 import { Token } from "../tokenizer";
-import { createDumbTokens, tokensTake } from "../tokensHelps";
+import { createDumbTokens, tokensTake, tokenTypeIsEqual } from "../tokensHelps";
 
 
-const cratedVariableDeclarator = (tokens: Array<Token>) => {
+const cratedVariableDeclarator = (tokens: Array<Token>, context: TransformContext) => {
     const variabledeclarator = new VariableDeclarator();
     const identifier = new Identifier();
     const tokeToken = tokensTake(tokens);
     const headToken = tokeToken.next();
-    const lastToken = tokeToken.last();
-
-    variabledeclarator.initSequence(headToken.start, lastToken.end)
+    identifier.initialize(headToken);
     variabledeclarator.id = identifier;
 
     let identifierName = tokeToken.next();
-    if (identifierName.type !== "name") {
+    if (!tokenTypeIsEqual(identifierName)) {
         if (headToken.type !== "name") {
-            throw new SyntaxError('identifier SyntaxError error');
+            throw new SyntaxError('identifier after need "=" symbol');
         }
-        identifierName = tokeToken.prev(2);
     }
 
-    identifier.initialize(identifierName);
-
-    const isBeforeSpace = tokeToken.next();
-    if (isBeforeSpace.type != 'space') {
-        throw new SyntaxError('identifier before need space');
-    }
-    const isEqualSign = tokeToken.next();
-    if (isEqualSign.value !== "=" && isEqualSign.type !== "name") {
-        throw new SyntaxError('identifier after need equalSign');
-    }
-    const isAfterSpace = tokeToken.next();
-    if (isAfterSpace.type != 'space') {
-        throw new SyntaxError('identifier after need space');
-    }
     const startLiteral = tokeToken.next();
+
     if (startLiteral.type === "string" || startLiteral.type === "number") {
         const literal = new Literal(startLiteral);
         variabledeclarator.init = literal;
+    } else {
+        tokeToken.prev(2)
+        const eatTokens = tokens.slice(tokeToken.getIndex());
+        const ObjectAST = context.createContext(eatTokens).walk(startLiteral);
+        variabledeclarator.init = ObjectAST;
     }
 
     return variabledeclarator;
 }
 
-const createMultipleVariableDeclarator = (tokens: Array<Token>) => {
+const createMultipleVariableDeclarator = (tokens: Array<Token>, context: TransformContext) => {
+    //创建哑尾节点,用于最后一次分割。
+    tokens.push(createDumbTokens({ type: "symbol", value: "=" }));
     const multiTokens = [];
-    for (let fast = 0, last = 0; last < tokens.length; last++) {
-        const lastValue = tokens[last];
-        if (lastValue.type === "symbol" && lastValue.value === ",") {
-            //添加哑尾节点,用于首次类型判断,以免最后获取到空
-            multiTokens.push([...tokens.slice(fast, last), createDumbTokens(lastValue)]);
-            fast = last + 1;
-        }
-        if (last === tokens.length - 1) {
-            //添加哑尾节点,用于首次类型判断,以免最后获取到空
-            multiTokens.push([...tokens.slice(fast, last), createDumbTokens(lastValue)]);
+    for (let fast = 0; fast < tokens.length; fast++) {
+        const fastToken = tokens[fast];
+        for (let last = fast + 1; last < tokens.length; last++) {
+            const lastTokens = tokens[last];
+            if (
+                lastTokens.type === "symbol" &&
+                fastToken.value === lastTokens.value &&
+                fastToken.value === "="
+            ) {
+                multiTokens.push(tokens.slice(fast - 1, last - 1));
+                fast = last - 2;
+                break;
+            }
         }
     }
-    return multiTokens.map(v => cratedVariableDeclarator(v))
+    return multiTokens.map(v => cratedVariableDeclarator(v, context))
 }
 
 export const genVariableDeclaration: ParseTransform = (token, context) => {
+
     const letAst = new VariableDeclaration();
     const t = context.getToken();
-    const isSpace = t.next();
-    const isVariable = t.next();
-    if (isSpace.type !== "space") {
-        throw new SyntaxError(`${token.value} after need token type is space`);
-    }
-    if (isVariable.type !== "name") {
-        throw new SyntaxError(`${token.value} after need token type is variable`);
-    }
-    let isEnd = t.next();
 
-    while (isEnd.value != ";") {
-        isEnd = t.next();
-    }
+    //寻找分号的下标 , 内部已经修改了下标
+    t.whereToken((isSymbol) => isSymbol.value != ";")
+
     const eatToken = context.eat(0, t.getIndex());
-    const newLetAst = createMultipleVariableDeclarator(eatToken);
+    const newLetAst = createMultipleVariableDeclarator(eatToken, context);
+
     letAst.kind = token.value;
-    letAst.start = token.start;
-    letAst.end = newLetAst[newLetAst.length - 1].end;
     letAst.declarations = newLetAst;
 
     return letAst;

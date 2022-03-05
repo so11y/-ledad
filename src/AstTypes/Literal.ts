@@ -12,8 +12,6 @@ export class Literal extends Ast {
         }
     }
     initialize(t: Token) {
-        this.start = t.start;
-        this.end = t.end;
         if (t.type === "number") {
             this.value = Number(t.value);
             return;

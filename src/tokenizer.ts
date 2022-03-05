@@ -54,7 +54,7 @@ class LinkNode {
         }
     }
 }
-const includeDot = [",", "{", "}", "[", "]", "(", ")",":","="];
+const includeDot = [",", "{", "}", "[", "]", "(", ")",":","=",";"];
 const nameIgnore = [" ", "'", "\n", ",", ...includeDot];
 
 const tokenizerLink: TokenizerLink = (source: string) => {
@@ -189,11 +189,7 @@ const spaceTokenizer: ParseToken = (context: Context) => {
             }
         },
         addToken(value) {
-            context.push({
-                type: 'space',
-                ...value,
-            });
-        },
+        }
     };
 };
 const dotTokenizer: ParseToken = (context: Context) => {
@@ -254,9 +250,9 @@ export const tokenizer = (source: string) => {
     parse
         .addTokenizer(spaceTokenizer)
         .addTokenizer(enterTokenizer)
+        .addTokenizer(dotTokenizer)
         .addTokenizer(stringTokenizer)
         .addTokenizer(numberTokenizer)
-        .addTokenizer(dotTokenizer)
         .addTokenizer(nameTokenizer);
     return parse.runParse();
 }

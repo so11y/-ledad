@@ -8,9 +8,4 @@ export class FunctionDeclaration extends Ast {
     async: boolean = false;
     params: Array<Identifier> = [];
     body: BlockStatement;
-
-    initializeLoc(start: number, end: number) {
-        this.start = start;
-        this.end = end;
-    }
 }

@@ -1,5 +1,5 @@
 import { Token } from "../tokenizer";
-import {Ast} from "./ast"
+import { Ast } from "./ast"
 
 export class Identifier extends Ast {
     type = "Identifier";
@@ -12,8 +12,9 @@ export class Identifier extends Ast {
         }
     }
     initialize(t: Token) {
-        this.start = t.start;
-        this.end = t.end;
+        if (t.type !== "name") {
+            throw new SyntaxError('identifier SyntaxError error');
+        }
         this.name = t.value;
     }
 }
