@@ -8,7 +8,7 @@ function good(a,b,g){
 
 }
 let good   = {
-    'a' :'1',
+    a:'1',
     b :{
         c :2 ,
         g :2020
