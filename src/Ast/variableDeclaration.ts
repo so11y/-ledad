@@ -3,7 +3,7 @@ import { Identifier } from "../AstTypes/Identifier";
 import { Literal } from "../AstTypes/Literal";
 import { VariableDeclarator, VariableDeclaration } from "../AstTypes/VariableDeclaration"
 import { Token } from "../tokenizer";
-import { createDumbTokens, tokensTake, tokenTypeIsEqual } from "../tokensHelps";
+import { createDumbTokens, isSimpleToken, tokensTake, tokenTypeIsEqual } from "../tokensHelps";
 
 
 const cratedVariableDeclarator = (tokens: Array<Token>, context: TransformContext) => {
@@ -23,7 +23,7 @@ const cratedVariableDeclarator = (tokens: Array<Token>, context: TransformContex
 
     const startLiteral = tokeToken.next();
 
-    if (startLiteral.type === "string" || startLiteral.type === "number") {
+    if (isSimpleToken(startLiteral)) {
         const literal = new Literal(startLiteral);
         variabledeclarator.init = literal;
     } else {

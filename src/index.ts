@@ -4,7 +4,16 @@ import { parse } from "./parse";
 
 let tokens = tokenizer(`
 let cc = 10;
-let good   = {a : '1' , b : { c : 2 , g : 2020 }};
+function good(a,b,g){
+
+}
+let good   = {a :
+    '1' ,
+     b :
+      {
+           c :
+           2 , g :
+            2020 }};
 
 `);
 
