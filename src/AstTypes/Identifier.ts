@@ -13,7 +13,7 @@ export class Identifier extends Ast {
     }
     initialize(t: Token) {
         if (t.type !== "name") {
-            throw new SyntaxError('identifier SyntaxError error');
+            throw new SyntaxError('identifier type need name');
         }
         this.name = t.value;
     }
