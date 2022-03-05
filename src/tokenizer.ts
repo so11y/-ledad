@@ -104,10 +104,6 @@ const enterTokenizer: ParseToken = (context: Context) => {
             }
         },
         addToken(value) {
-            context.push({
-                type: 'name',
-                ...value
-            });
         },
     };
 };
