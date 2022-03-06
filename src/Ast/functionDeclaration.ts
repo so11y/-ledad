@@ -2,7 +2,7 @@ import { BlockStatement } from "../AstTypes/BlockStatement";
 import { FunctionDeclaration } from "../AstTypes/FunctionDeclaration";
 import { Identifier } from "../AstTypes/Identifier";
 import { ParseTransform } from "../parse";
-import { dotTakeSection, getTokenTypes, TokenParseError, TokenParseErrors } from "../tokensHelps";
+import { dotTakeSection, getTokenTypes, isSymbolToken, TokenParseError, TokenParseErrors } from "../tokensHelps";
 
 
 const genFunctionDeclaration: ParseTransform = (token, context) => {
@@ -13,12 +13,16 @@ const genFunctionDeclaration: ParseTransform = (token, context) => {
     funAst.body = blockStatement;
     const t = context.getToken();
     const isVariable = t.next();
-    if (isVariable.type !== "name") {
-        throw new SyntaxError('function space before need token type is variable');
+    if (!isSymbolToken(isVariable, "(")) {
+        if (isVariable.type !== "name") {
+            throw new SyntaxError('function space before need token type is variable');
+        }
+        identifier.initialize(isVariable)
+        //吃掉之前使用过的token
+        context.eat(0, t.getIndex());
+    }else{
+        funAst.id = null;
     }
-    identifier.initialize(isVariable)
-    //吃掉之前使用过的token
-    context.eat(0, t.getIndex());
     //重新恢复指针
     t.init();
     try {

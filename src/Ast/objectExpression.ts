@@ -1,6 +1,6 @@
 
 import { Token } from "../tokenizer";
-import { dotTakeSection, isSimpleToken, isSymbolToken, parseCanWalk } from "../tokensHelps";
+import { dotTakeSection, isFunctionToken, isSimpleToken, isSymbolToken, parseCanWalk } from "../tokensHelps";
 import { ObjectExpression, ObjectProperty } from "../AstTypes/ObjectExpression";
 import { composeParse, ParseTransform } from "../parse";
 import { Identifier } from "../AstTypes/Identifier";
@@ -33,6 +33,10 @@ const createMultipleObjectExpression = (tokens: Array<Token>) => {
             } else if (parseCanWalk(beforeToken)) {
                 //吃掉当前的 ':' 符号 下一个是{ 开始递归找最外面一层的 {} 对象
                 tokens.splice(0, 1);
+                if(isFunctionToken(beforeToken)){
+                    //如果是function关键字 需要把关键字吃掉
+                    tokens.shift();
+                }
                 //在这里进行递归的时候
                 //把当前循环的tokens給吃掉
                 const objAst = composeParse(tokens).walk(beforeToken);
