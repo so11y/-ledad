@@ -97,3 +97,11 @@ export const isSymbolToken = (token: Token, value: string) => {
 export const isSimpleToken = (token: Token) => {
     return token.type === "string" || token.type === "number";
 }
+
+export const isFunctionToken = (token: Token) => {
+    return token.type === "name" && token.value === "function";
+}
+
+export const parseCanWalk = (token: Token) => {
+    return isFunctionToken(token) || ["{", "[",].some((v) => isSymbolToken(token, v))
+}

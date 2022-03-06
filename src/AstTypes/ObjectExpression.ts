@@ -1,4 +1,5 @@
 import { Ast } from "./ast"
+import { FunctionDeclaration } from "./FunctionDeclaration";
 import { Identifier } from "./Identifier";
 
 export class ObjectProperty extends Ast {
@@ -13,6 +14,9 @@ export class ObjectProperty extends Ast {
             this.key = key;
         }
         if (value) {
+            if(value instanceof FunctionDeclaration){
+                this.methods = true;
+            }
             this.value = value
         }
     }

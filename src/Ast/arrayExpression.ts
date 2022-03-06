@@ -3,7 +3,7 @@ import { Literal } from "../AstTypes/Literal";
 import { ArrayExpression } from "../AstTypes/ArrayExpression";
 import { composeParse, ParseTransform } from "../parse";
 import { Token } from "../tokenizer";
-import { dotTakeSection, isSimpleToken, isSymbolToken } from "../tokensHelps";
+import { dotTakeSection, isSimpleToken, isSymbolToken, parseCanWalk } from "../tokensHelps";
 
 
 const createMultipleArrayExpression = (tokens: Array<Token>) => {
@@ -17,7 +17,7 @@ const createMultipleArrayExpression = (tokens: Array<Token>) => {
             astProperties.push(new Literal(currentToken))
             //对象或者数组重新走递归流程
             //这里后面在改造支持函数类型
-        } else if (["{", "["].some(v => isSymbolToken(currentToken, v))) {
+        } else if (parseCanWalk(currentToken)) {
             //到这里已经消耗掉了第一个开头的符号，并不是完整的
             //所以在这里在恢复回去
             tokens.unshift(currentToken);
