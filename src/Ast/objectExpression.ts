@@ -1,8 +1,8 @@
 
 import { Token } from "../tokenizer";
-import { dotTakeSection, isSimpleToken, isSymbolToken, tokensTake } from "../tokensHelps";
+import { dotTakeSection, isSimpleToken, isSymbolToken } from "../tokensHelps";
 import { ObjectExpression, ObjectProperty } from "../AstTypes/ObjectExpression";
-import { ParseTransform, TransformContext } from "../parse";
+import { composeParse, ParseTransform } from "../parse";
 import { Identifier } from "../AstTypes/Identifier";
 import { Literal } from "../AstTypes/Literal";
 import { Ast } from "../AstTypes/ast";
@@ -18,7 +18,7 @@ const createObjectProperty = (key: Token, value: Ast) => {
 }
 
 
-const createMultipleObjectExpression = (tokens: Array<Token>, context: TransformContext) => {
+const createMultipleObjectExpression = (tokens: Array<Token>) => {
     const objProperties: ObjectProperty[] = [];
     while (tokens.length) {
         const afterToken = tokens.shift();
@@ -30,26 +30,27 @@ const createMultipleObjectExpression = (tokens: Array<Token>, context: Transform
                 tokens.splice(0, 2);
                 objProperties.push(createSimpleObjectProperty(afterToken, beforeToken))
             } else if (isSymbolToken(beforeToken, "{")) {
-                const takeTokens = tokensTake([beforeToken, ...tokens]);
-                const [startIndex, endIndex] = dotTakeSection({ startSymbol: "{", endSymbol: "}" }, takeTokens)
-                const eatTokens = tokens.splice(startIndex, endIndex);
-                const objAst = createObjectExpression(eatTokens,context);
+                //吃掉当前的 ':' 符号 下一个是{ 开始递归找最外面一层的 {} 对象
+                tokens.splice(0, 1);
+                const objAst = composeParse(tokens).walk(beforeToken);
                 objProperties.push(createObjectProperty(afterToken,objAst))
             }
         }
     }
     return objProperties
 }
-const createObjectExpression = (tokens: Array<Token>, context: TransformContext) =>{
-  const objectAst = new ObjectExpression();
-  objectAst.properties = createMultipleObjectExpression(tokens, context);
-  return objectAst;
+
+const createObjectExpression = (tokens: Array<Token>) => {
+    const objectAst = new ObjectExpression();
+    objectAst.properties = createMultipleObjectExpression(tokens);
+    return objectAst;
 }
 
 const genObjectExpression: ParseTransform = (token, context) => {
+    //找最外一层的对象{}
     const [startIndex, endIndex] = dotTakeSection({ startSymbol: "{", endSymbol: "}" }, context.getToken())
     const eatToken = context.eat(startIndex, endIndex);
-    return createObjectExpression(eatToken,context)
+    return createObjectExpression(eatToken)
 }
 export const ObjectExpressionParse = {
     kind: "{",

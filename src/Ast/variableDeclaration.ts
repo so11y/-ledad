@@ -1,4 +1,4 @@
-import { ParseTransform, TransformContext } from "../parse";
+import { composeParse, ParseTransform } from "../parse";
 import { Identifier } from "../AstTypes/Identifier";
 import { Literal } from "../AstTypes/Literal";
 import { VariableDeclarator, VariableDeclaration } from "../AstTypes/VariableDeclaration"
@@ -6,7 +6,7 @@ import { Token } from "../tokenizer";
 import { createDumbTokens, isSimpleToken, tokensTake, tokenTypeIsEqual } from "../tokensHelps";
 
 
-const cratedVariableDeclarator = (tokens: Array<Token>, context: TransformContext) => {
+const cratedVariableDeclarator = (tokens: Array<Token>) => {
     const variabledeclarator = new VariableDeclarator();
     const identifier = new Identifier();
     const tokeToken = tokensTake(tokens);
@@ -29,14 +29,15 @@ const cratedVariableDeclarator = (tokens: Array<Token>, context: TransformContex
     } else {
         tokeToken.prev(2)
         const eatTokens = tokens.slice(tokeToken.getIndex());
-        const ObjectAST = context.createContext(eatTokens).walk(startLiteral);
+        console.log("---");
+        const ObjectAST = composeParse(eatTokens).walk(startLiteral);
         variabledeclarator.init = ObjectAST;
     }
 
     return variabledeclarator;
 }
 
-const createMultipleVariableDeclarator = (tokens: Array<Token>, context: TransformContext) => {
+const createMultipleVariableDeclarator = (tokens: Array<Token>) => {
     //创建哑尾节点,用于最后一次分割。
     tokens.push(createDumbTokens({ type: "symbol", value: "=" }));
     const multiTokens = [];
@@ -55,7 +56,7 @@ const createMultipleVariableDeclarator = (tokens: Array<Token>, context: Transfo
             }
         }
     }
-    return multiTokens.map(v => cratedVariableDeclarator(v, context))
+    return multiTokens.map(v => cratedVariableDeclarator(v))
 }
 
 export const genVariableDeclaration: ParseTransform = (token, context) => {
@@ -67,7 +68,7 @@ export const genVariableDeclaration: ParseTransform = (token, context) => {
     t.whereToken((isSymbol) => isSymbol.value != ";")
 
     const eatToken = context.eat(0, t.getIndex());
-    const newLetAst = createMultipleVariableDeclarator(eatToken, context);
+    const newLetAst = createMultipleVariableDeclarator(eatToken);
 
     letAst.kind = token.value;
     letAst.declarations = newLetAst;
