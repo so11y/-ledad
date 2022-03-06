@@ -2,7 +2,7 @@
 import { Token } from "../tokenizer";
 import { dotTakeSection, isSimpleToken, isSymbolToken, tokensTake } from "../tokensHelps";
 import { ObjectExpression, ObjectProperty } from "../AstTypes/ObjectExpression";
-import { ParseTransform, TransformContext } from "../parse";
+import { composeParse, ParseTransform, TransformContext } from "../parse";
 import { Identifier } from "../AstTypes/Identifier";
 import { Literal } from "../AstTypes/Literal";
 import { Ast } from "../AstTypes/ast";
@@ -29,27 +29,24 @@ const createMultipleObjectExpression = (tokens: Array<Token>, context: Transform
             if (isSimpleToken(beforeToken)) {
                 tokens.splice(0, 2);
                 objProperties.push(createSimpleObjectProperty(afterToken, beforeToken))
-            } else if (isSymbolToken(beforeToken, "{")) {
-                const takeTokens = tokensTake([beforeToken, ...tokens]);
-                const [startIndex, endIndex] = dotTakeSection({ startSymbol: "{", endSymbol: "}" }, takeTokens)
-                const eatTokens = tokens.splice(startIndex, endIndex);
-                const objAst = createObjectExpression(eatTokens,context);
-                objProperties.push(createObjectProperty(afterToken,objAst))
+            } else {
+                const ObjectAST = composeParse([beforeToken, ...tokens]).walk(beforeToken);
+                objProperties.push(createObjectProperty(afterToken,ObjectAST))
             }
         }
     }
     return objProperties
 }
-const createObjectExpression = (tokens: Array<Token>, context: TransformContext) =>{
-  const objectAst = new ObjectExpression();
-  objectAst.properties = createMultipleObjectExpression(tokens, context);
-  return objectAst;
+const createObjectExpression = (tokens: Array<Token>, context: TransformContext) => {
+    const objectAst = new ObjectExpression();
+    objectAst.properties = createMultipleObjectExpression(tokens, context);
+    return objectAst;
 }
 
 const genObjectExpression: ParseTransform = (token, context) => {
     const [startIndex, endIndex] = dotTakeSection({ startSymbol: "{", endSymbol: "}" }, context.getToken())
     const eatToken = context.eat(startIndex, endIndex);
-    return createObjectExpression(eatToken,context)
+    return createObjectExpression(eatToken, context)
 }
 export const ObjectExpressionParse = {
     kind: "{",

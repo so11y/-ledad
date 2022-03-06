@@ -10,68 +10,58 @@ import { tokensTake } from "./tokensHelps";
 interface ParseContext {
     eat: (start: number, end: number) => Token[];
     getToken(): ReturnType<typeof tokensTake>;
-    addParseToken(t: KeywordParse): ParseContext;
     walk(current: Token): Ast;
-    runParse(ast: Array<Ast>): Ast[]
+    runParse(ast: Array<Ast>): void;
 }
 
-interface CreateContext {
-    (tokens: Token[]): ParseContext
-}
-
-export type TransformContext = ParseContext & { createContext: CreateContext };
-
+export type TransformContext = ParseContext ;
 export interface ParseTransform {
     (token: Token, context: TransformContext): Ast | null;
 }
-
-
 interface KeywordParse {
     kind: string;
     transform: ParseTransform;
 }
+const keyWordMap = new Map<string, KeywordParse>();
 
-const composeParse = (tokens: Array<Token>): ParseContext => {
+export const composeParse = (tokens: Array<Token>): ParseContext => {
     const copyTokens = tokens.slice(0);
-    const keyWordMap = new Map<string, KeywordParse>();
 
-
-
-    const createContext = (tokens: Array<Token>) => {
-        const parseContext = {
-            eat: (start: number, end: number) => {
-                return tokens.splice(start, end);
-            },
-            getToken() {
-                return tokensTake(tokens);
-            },
-            addParseToken(t: KeywordParse) {
-                keyWordMap.set(t.kind, t);
-                return this;
-            },
-            walk(current: Token) {
-                if (keyWordMap.has(current.value)) {
-                    const createAST = keyWordMap.get(current.value).transform(current, {
-                        ...parseContext,
-                        createContext
-                    });
-                    return createAST;
+    const parseContext = {
+        eat: (start: number, end: number) => {
+            return tokens.splice(start, end);
+        },
+        getToken() {
+            return tokensTake(copyTokens);
+        },
+        walk(current: Token) {
+            if (keyWordMap.has(current.value)) {
+                const createAST = keyWordMap.get(current.value).transform(current, parseContext);
+                return createAST;
+            }
+        },
+        runParse(ast: Array<Ast>) {
+            while (copyTokens.length) {
+                const current = copyTokens.shift();
+                const node = this.walk(current);
+                if (node) {
+                    ast.push(node);
                 }
-            },
-            runParse(ast: Array<Ast>) {
-                while (tokens.length) {
-                    const current = tokens.shift();
-                    const node = this.walk(current);
-                    if (node) {
-                        ast.push(node);
-                    }
-                }
-                return ast
-            },
-        }
-        return parseContext;
+            }
+        },
     }
-    return createContext(copyTokens)
+    return parseContext;
+}
+const parseAdd = (t: KeywordParse) => {
+    keyWordMap.set(t.kind, t);
+}
+
+const parseInit = () => {
+    parseAdd(VariableDeclarationParseConst)
+    parseAdd(VariableDeclarationParseLet)
+    parseAdd(VariableDeclarationParseVar)
+    parseAdd(FunctionDeclarationParse)
+    parseAdd(ObjectExpressionParse)
 }
 
 export const parse = (tokens: Array<Token>) => {
@@ -79,12 +69,7 @@ export const parse = (tokens: Array<Token>) => {
         type: "Program",
         body: [] as Ast[],
     }
-    const p = composeParse(tokens);
-    p.addParseToken(VariableDeclarationParseConst)
-        .addParseToken(VariableDeclarationParseLet)
-        .addParseToken(VariableDeclarationParseVar)
-        .addParseToken(FunctionDeclarationParse)
-        .addParseToken(ObjectExpressionParse)
-    p.runParse(ast.body)
+    parseInit();
+    composeParse(tokens).runParse(ast.body)
     return ast
 }

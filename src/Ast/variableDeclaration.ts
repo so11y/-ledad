@@ -1,4 +1,4 @@
-import { ParseTransform, TransformContext } from "../parse";
+import { composeParse, ParseTransform, TransformContext } from "../parse";
 import { Identifier } from "../AstTypes/Identifier";
 import { Literal } from "../AstTypes/Literal";
 import { VariableDeclarator, VariableDeclaration } from "../AstTypes/VariableDeclaration"
@@ -29,7 +29,7 @@ const cratedVariableDeclarator = (tokens: Array<Token>, context: TransformContex
     } else {
         tokeToken.prev(2)
         const eatTokens = tokens.slice(tokeToken.getIndex());
-        const ObjectAST = context.createContext(eatTokens).walk(startLiteral);
+        const ObjectAST = composeParse(eatTokens).walk(startLiteral);
         variabledeclarator.init = ObjectAST;
     }
 
