@@ -1,7 +1,7 @@
 import { Ast } from "./ast";
 import { Identifier } from "./Identifier";
 
-export class VariableDeclarator {
+export class VariableDeclarator extends Ast {
     type = "VariableDeclarator";
     id: Identifier;
     init: Ast;

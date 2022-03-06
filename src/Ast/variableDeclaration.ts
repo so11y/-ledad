@@ -23,13 +23,14 @@ const cratedVariableDeclarator = (tokens: Array<Token>) => {
 
     const startLiteral = tokeToken.next();
 
+    //简单类型
     if (isSimpleToken(startLiteral)) {
         const literal = new Literal(startLiteral);
         variabledeclarator.init = literal;
     } else {
+        //其他类型重新走递归流程
         tokeToken.prev(2)
         const eatTokens = tokens.slice(tokeToken.getIndex());
-        console.log("---");
         const ObjectAST = composeParse(eatTokens).walk(startLiteral);
         variabledeclarator.init = ObjectAST;
     }

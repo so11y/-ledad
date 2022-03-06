@@ -3,6 +3,7 @@ import { Token } from "./tokenizer";
 import { Ast } from "./AstTypes/ast";
 import { FunctionDeclarationParse } from "./Ast/functionDeclaration";
 import { ObjectExpressionParse } from "./Ast/objectExpression";
+import { ArrayExpressionParse } from "./Ast/arrayExpression";
 import { VariableDeclarationParseConst, VariableDeclarationParseLet, VariableDeclarationParseVar } from "./Ast/variableDeclaration";
 import { tokensTake } from "./tokensHelps";
 
@@ -25,6 +26,9 @@ interface KeywordParse {
 }
 const keyWordMap = new Map<string, KeywordParse>();
 
+/**
+ * 引用吃掉
+ */
 export const composeParse = (tokens: Array<Token>): ParseContext => {
     // const copyTokens = tokens.slice(0);
 
@@ -59,11 +63,18 @@ const parseAdd = (t: KeywordParse) => {
 }
 
 const parseInit = () => {
+    //const
     parseAdd(VariableDeclarationParseConst)
+    //let
     parseAdd(VariableDeclarationParseLet)
+    //var
     parseAdd(VariableDeclarationParseVar)
+    //普通function
     parseAdd(FunctionDeclarationParse)
+    //字面量对象
     parseAdd(ObjectExpressionParse)
+    //数组
+    parseAdd(ArrayExpressionParse)
 }
 
 export const parse = (tokens: Array<Token>) => {

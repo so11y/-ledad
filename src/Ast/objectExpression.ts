@@ -29,11 +29,16 @@ const createMultipleObjectExpression = (tokens: Array<Token>) => {
             if (isSimpleToken(beforeToken)) {
                 tokens.splice(0, 2);
                 objProperties.push(createSimpleObjectProperty(afterToken, beforeToken))
-            } else if (isSymbolToken(beforeToken, "{")) {
+
+                //对象或者数组重新走递归流程
+                //这里后面在改造支持函数类型
+            } else if (["{", "["].some(v => isSymbolToken(beforeToken, v))) {
                 //吃掉当前的 ':' 符号 下一个是{ 开始递归找最外面一层的 {} 对象
                 tokens.splice(0, 1);
+                //在这里进行递归的时候
+                //把当前循环的tokens給吃掉
                 const objAst = composeParse(tokens).walk(beforeToken);
-                objProperties.push(createObjectProperty(afterToken,objAst))
+                objProperties.push(createObjectProperty(afterToken, objAst))
             }
         }
     }
