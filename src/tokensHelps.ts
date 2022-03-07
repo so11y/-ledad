@@ -105,3 +105,7 @@ export const isFunctionToken = (token: Token) => {
 export const parseCanWalk = (token: Token) => {
     return isFunctionToken(token) || ["{", "[",].some((v) => isSymbolToken(token, v))
 }
+
+export const isSymbolTokens = (tokens: Token) => {
+    return ["{", "[",].some((v) => isSymbolToken(tokens, v))
+}

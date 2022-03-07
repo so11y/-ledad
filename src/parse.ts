@@ -4,8 +4,10 @@ import { Ast } from "./AstTypes/ast";
 import { FunctionDeclarationParse } from "./Ast/functionDeclaration";
 import { ObjectExpressionParse } from "./Ast/objectExpression";
 import { ArrayExpressionParse } from "./Ast/arrayExpression";
+import { CallExpressionParse } from "./Ast/CallExpression"
 import { VariableDeclarationParseConst, VariableDeclarationParseLet, VariableDeclarationParseVar } from "./Ast/variableDeclaration";
 import { tokensTake } from "./tokensHelps";
+import { ExpressionTypeEnum, isExpression } from "./AstTypes/ExpressionStatement";
 
 
 export interface ParseContext {
@@ -30,7 +32,6 @@ const keyWordMap = new Map<string, KeywordParse>();
  * 引用吃掉
  */
 export const composeParse = (tokens: Array<Token>): ParseContext => {
-    // const copyTokens = tokens.slice(0);
 
     const parseContext = {
         eat: (start: number, end: number) => {
@@ -40,9 +41,14 @@ export const composeParse = (tokens: Array<Token>): ParseContext => {
             return tokensTake(tokens);
         },
         walk(current: Token) {
-            if (keyWordMap.has(current.value)) {
-                const createAST = keyWordMap.get(current.value).transform(current, parseContext);
-                return createAST;
+            //检查是否是语句
+            const expressionType = isExpression(current, parseContext)
+            switch (expressionType) {
+                case ExpressionTypeEnum.CallExpression:
+                    CallExpressionParse(current, parseContext);
+                    break;
+                default:
+                    return keyWordMap.get(current.value).transform(current, parseContext);
             }
         },
         runParse(ast: Array<Ast>) {
