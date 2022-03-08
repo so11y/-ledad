@@ -3,7 +3,7 @@ import { Identifier } from "../AstTypes/Identifier";
 import { Literal } from "../AstTypes/Literal";
 import { VariableDeclarator, VariableDeclaration } from "../AstTypes/VariableDeclaration"
 import { Token } from "../tokenizer";
-import { createDumbTokens, isSimpleToken, tokensTake, tokenTypeIsEqual } from "../tokensHelps";
+import { createDumbTokens, isSimpleToken, isSymbolTokens, tokensTake, tokenTypeIsEqual } from "../tokensHelps";
 
 
 const cratedVariableDeclarator = (tokens: Array<Token>) => {
@@ -31,6 +31,10 @@ const cratedVariableDeclarator = (tokens: Array<Token>) => {
         //其他类型重新走递归流程
         tokeToken.prev(2)
         const eatTokens = tokens.slice(tokeToken.getIndex());
+        //统一walk的时候不是符号token,将先消耗掉
+        if(!isSymbolTokens(startLiteral)){
+            eatTokens.shift();
+        }
         const ObjectAST = composeParse(eatTokens).walk(startLiteral);
         variabledeclarator.init = ObjectAST;
     }

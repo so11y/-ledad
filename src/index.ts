@@ -3,17 +3,16 @@ import { parse } from "./parse";
 
 
 //let cc = [function (a,b){},{a:function (z,z){}}];
-//let good   =  [1,[2,3],{a:[4,5],p:{gg:6}}];'
+// let good1 = 1, c = [1,23,{a:1,z:{zz:1,c:[2,3,function(a,b,c){}]}}];
+// let a = add(2);
 
-
+//add(,2)
+// let good   =  add([1,2],2);
 let tokens = tokenizer(`
-let good = 1;
+let g =  [{a:1},add(3,add(5)),3];
 `);
-console.log(tokens);
+
+console.log(tokens,2);
 
 let ast = parse(tokens);
-
-console.log(ast);
-
-
-import.meta.hot.accept(() => { });
+console.log(ast.body);

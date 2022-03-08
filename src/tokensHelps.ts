@@ -81,8 +81,8 @@ export const dotTakeSection = (dot: DotSymbol, tokens: ReturnType<typeof tokensT
 export const getTokenTypes = (tokens: Array<Token>, type: string) => {
     return tokens.filter(v => v.type === type);
 }
-
-export const tokenTypeIsName = (token: Token) => {
+//tokenTypeIsName
+export const isNameToken = (token: Token) => {
     return token.type === "name";
 }
 

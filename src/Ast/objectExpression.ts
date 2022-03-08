@@ -25,6 +25,9 @@ const createMultipleObjectExpression = (tokens: Array<Token>) => {
         const middleToken = tokens[0];
         if (middleToken && isSymbolToken(middleToken, ":")) {
             const beforeToken = tokens[1];
+            if(isSymbolToken(beforeToken,",")){
+                continue;
+            }
             //是否简单类型
             if (isSimpleToken(beforeToken)) {
                 tokens.splice(0, 2);

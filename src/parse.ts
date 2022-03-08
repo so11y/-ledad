@@ -41,14 +41,15 @@ export const composeParse = (tokens: Array<Token>): ParseContext => {
             return tokensTake(tokens);
         },
         walk(current: Token) {
+            if (keyWordMap.has(current.value)) {
+                return keyWordMap.get(current.value).transform(current, parseContext);
+            }
             //检查是否是语句
             const expressionType = isExpression(current, parseContext)
             switch (expressionType) {
                 case ExpressionTypeEnum.CallExpression:
-                    CallExpressionParse(current, parseContext);
-                    break;
+                    return CallExpressionParse(current, parseContext);
                 default:
-                    return keyWordMap.get(current.value).transform(current, parseContext);
             }
         },
         runParse(ast: Array<Ast>) {

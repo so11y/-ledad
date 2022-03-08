@@ -1,5 +1,6 @@
-import { ParseContext } from "src/parse";
-import { Token } from "src/tokenizer";
+import { ParseContext } from "../parse";
+import { Token } from "../tokenizer";
+import { isSymbolToken, isNameToken } from "../tokensHelps";
 import { Ast } from "./ast";
 
 // export interface ExpressionType {
@@ -13,7 +14,14 @@ export enum ExpressionTypeEnum {
 
 // export const isExpression = (token: Token, context: ParseContext): IExpressionType<ExpressionType> => {
 export const isExpression = (token: Token, context: ParseContext): ExpressionTypeEnum => {
-    return ExpressionTypeEnum.CallExpression
+    const takeToken = context.getToken();
+    const isBrackets = takeToken.next();
+    if (token && isBrackets) {
+        if (isNameToken(token) && isSymbolToken(isBrackets, "(")) {
+            return ExpressionTypeEnum.CallExpression
+        }
+    }
+    return null;
 }
 
 

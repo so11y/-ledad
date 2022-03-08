@@ -54,7 +54,7 @@ class LinkNode {
         }
     }
 }
-const includeDot = [",", "{", "}", "[", "]", "(", ")",":","=",";"];
+const includeDot = [",", "{", "}", "[", "]", "(", ")",":","=",";","."];
 const nameIgnore = [" ", "'", "\n", ",", ...includeDot];
 
 const tokenizerLink: TokenizerLink = (source: string) => {
@@ -139,15 +139,15 @@ const stringTokenizer: ParseToken = (context: Context) => {
     return {
         resole() {
             let newIndex = context.index;
-            let currrent = context.source.charAt(newIndex);
+            let current = context.source.charAt(newIndex);
             let next = context.source.charAt(newIndex + 1);
             let value = "";
             const isStringSymbol = "'";
-            if (currrent === isStringSymbol) {
+            if (current === isStringSymbol) {
                 while (next && next != isStringSymbol) {
-                    value += currrent;
+                    value += current;
                     next = context.getIndexSource(++newIndex);
-                    currrent = context.getIndexSource(newIndex);
+                    current = context.getIndexSource(newIndex);
                 }
                 if (next === isStringSymbol) {
                     value += next;
