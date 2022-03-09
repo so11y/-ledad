@@ -1,6 +1,6 @@
 import { ParseContext } from "../parse";
 import { Token } from "../tokenizer";
-import { isSymbolToken, isNameToken } from "../tokensHelps";
+import { isSymbolToken, isNameToken, tokensTake } from "../tokensHelps";
 import { Ast } from "./ast";
 
 // export interface ExpressionType {
@@ -9,7 +9,9 @@ import { Ast } from "./ast";
 
 // type IExpressionType<T, V extends keyof T = keyof T> = V extends V ? T[V] : never;
 export enum ExpressionTypeEnum {
-    CallExpression = "CallExpression"
+    CallExpression = "CallExpression",
+    MemberExpression = "MemberExpression"
+
 }
 
 // export const isExpression = (token: Token, context: ParseContext): IExpressionType<ExpressionType> => {
@@ -17,6 +19,13 @@ export const isExpression = (token: Token, context: ParseContext): ExpressionTyp
     const takeToken = context.getToken();
     const isBrackets = takeToken.next();
     if (token && isBrackets) {
+        if(isNameToken(token) && isSymbolToken(isBrackets, ".")){
+            const nextPropertyToken = takeToken.next();
+            if(!isNameToken(nextPropertyToken)){
+                throw new SyntaxError(`Unexpected token ${nextPropertyToken.value}`);
+            }
+            return ExpressionTypeEnum.MemberExpression;
+        }
         if (isNameToken(token) && isSymbolToken(isBrackets, "(")) {
             return ExpressionTypeEnum.CallExpression
         }

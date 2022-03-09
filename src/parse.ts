@@ -4,7 +4,8 @@ import { Ast } from "./AstTypes/ast";
 import { FunctionDeclarationParse } from "./Ast/functionDeclaration";
 import { ObjectExpressionParse } from "./Ast/objectExpression";
 import { ArrayExpressionParse } from "./Ast/arrayExpression";
-import { CallExpressionParse } from "./Ast/CallExpression"
+import { CallExpressionParse } from "./Ast/callExpression"
+import { MemberExpressionParse } from "./Ast/memberExpression"
 import { VariableDeclarationParseConst, VariableDeclarationParseLet, VariableDeclarationParseVar } from "./Ast/variableDeclaration";
 import { tokensTake } from "./tokensHelps";
 import { ExpressionTypeEnum, isExpression } from "./AstTypes/ExpressionStatement";
@@ -44,11 +45,14 @@ export const composeParse = (tokens: Array<Token>): ParseContext => {
             if (keyWordMap.has(current.value)) {
                 return keyWordMap.get(current.value).transform(current, parseContext);
             }
+            console.log("---");
             //检查是否是语句
             const expressionType = isExpression(current, parseContext)
             switch (expressionType) {
                 case ExpressionTypeEnum.CallExpression:
                     return CallExpressionParse(current, parseContext);
+                case ExpressionTypeEnum.MemberExpression:
+                    return MemberExpressionParse(current, parseContext);
                 default:
             }
         },
