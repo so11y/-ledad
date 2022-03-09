@@ -1,19 +1,20 @@
 
-import { ParseContext, ParseTransform } from "../parse";
-import { ExpressionStatement } from "../AstTypes/ExpressionStatement";
+import { ParseContext } from "../parseRegister";
 import { CallExpression } from "../AstTypes/CallExpression"
 import { Token } from "../tokenizer";
-import { dotTakeSection } from "../tokensHelps";
+import { dotTakeSection, isToken } from "../tokensHelps";
 import { Identifier } from "../AstTypes/Identifier";
 import { iterationArrayToken } from "./arrayExpression";
+import { Ast } from "src/AstTypes/ast";
 
-const createCallee = (tokens: Token) => {
-    if (tokens) {
-        return new Identifier(tokens);
+const createCallee = (token: Token | Ast) => {
+    if (token && isToken(token)) {
+        return new Identifier(token);
     }
+    return token;
 }
 
-const createCallExpression = (token: Token, context: ParseContext) => {
+const createCallExpression = (token: Token | Ast, context: ParseContext) => {
     const callExpression = new CallExpression();
     const takeToken = context.getToken()
     callExpression.callee = createCallee(token);
@@ -25,7 +26,7 @@ const createCallExpression = (token: Token, context: ParseContext) => {
 }
 
 
-export const CallExpressionParse: ParseTransform = (token: Token, context: ParseContext) => {
+export const CallExpressionParse = (token: Token | Ast, context: ParseContext) => {
     // const statement = new ExpressionStatement();
     // statement.expression =
     return createCallExpression(token, context);;

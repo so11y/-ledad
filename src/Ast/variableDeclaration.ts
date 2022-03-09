@@ -1,4 +1,5 @@
-import { composeParse, ParseTransform } from "../parse";
+import { composeParse } from "../parse";
+import { ParseTransform } from "../parseRegister";
 import { Identifier } from "../AstTypes/Identifier";
 import { Literal } from "../AstTypes/Literal";
 import { VariableDeclarator, VariableDeclaration } from "../AstTypes/VariableDeclaration"

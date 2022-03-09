@@ -2,7 +2,8 @@
 import { Token } from "../tokenizer";
 import { dotTakeSection, isSimpleToken, isSymbolToken, isSymbolTokens } from "../tokensHelps";
 import { ObjectExpression, ObjectProperty } from "../AstTypes/ObjectExpression";
-import { composeParse, ParseTransform } from "../parse";
+import { composeParse } from "../parse";
+import { ParseTransform } from "../parseRegister";
 import { Identifier } from "../AstTypes/Identifier";
 import { Literal } from "../AstTypes/Literal";
 import { Ast } from "../AstTypes/ast";

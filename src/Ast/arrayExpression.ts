@@ -1,7 +1,8 @@
 import { Ast } from "../AstTypes/ast";
 import { Literal } from "../AstTypes/Literal";
 import { ArrayExpression } from "../AstTypes/ArrayExpression";
-import { composeParse, ParseTransform } from "../parse";
+import { composeParse } from "../parse";
+import { hasRegisterKey, ParseTransform } from "../parseRegister";
 import { Token } from "../tokenizer";
 import { dotTakeSection, isSimpleToken, isSymbolToken, isSymbolTokens } from "../tokensHelps";
 
@@ -14,6 +15,9 @@ export const iterationArrayToken = (tokens: Array<Token>) => {
             continue;
         }
         //是否简单类型
+        //不能是符号
+        //没有在注册过关键字
+        // if ( (isSimpleToken(currentToken) || !(hasRegisterKey(currentToken.value))) && !isSymbolToken(currentToken) ) {
         if (isSimpleToken(currentToken)) {
             astProperties.push(new Literal(currentToken))
             //对象或者数组重新走递归流程

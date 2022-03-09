@@ -1,7 +1,7 @@
 import { BlockStatement } from "../AstTypes/BlockStatement";
 import { FunctionDeclaration } from "../AstTypes/FunctionDeclaration";
 import { Identifier } from "../AstTypes/Identifier";
-import { ParseTransform } from "../parse";
+import { ParseTransform } from "../parseRegister";
 import { dotTakeSection, getTokenTypes, isSymbolToken, TokenParseError, TokenParseErrors } from "../tokensHelps";
 
 

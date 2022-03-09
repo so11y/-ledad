@@ -24,6 +24,9 @@ export const tokensTake = (tokens: Array<Token>) => {
         getIndex() {
             return index;
         },
+        getToken(index:number){
+            return tokens[index]
+        },
         prev(p?: number) {
             if (p) {
                 index -= p
@@ -86,11 +89,18 @@ export const isNameToken = (token: Token) => {
     return token.type === "name";
 }
 
+export const isToken = (token:any):token is Token=>{
+    return token.type && (token.value != undefined)
+}
+
 export const tokenTypeIsEqual = (token: Token) => {
     return isSymbolToken(token, "=");
 }
 
-export const isSymbolToken = (token: Token, value: string) => {
+export const isSymbolToken = (token: Token, value?: string) => {
+    if (!value) {
+        return token.type === "symbol";
+    }
     return token.type === "symbol" && token.value === value;
 }
 
