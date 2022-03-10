@@ -8,6 +8,7 @@ import { MemberExpression } from "./MemberExpression";
 import { NewExpression } from "./NewExpression";
 import { ObjectExpression } from "./ObjectExpression";
 import { AssignmentExpression } from "./AssignmentExpression";
+import { SequenceExpression } from "./SequenceExpression";
 
 // export interface ExpressionType {
 //     CallExpression: "CallExpression"
@@ -74,7 +75,8 @@ export class ExpressionStatement extends Ast {
             CallExpression,
             ObjectExpression,
             NewExpression,
-            AssignmentExpression
+            AssignmentExpression,
+            SequenceExpression
         ]
         return expressions.some(v => ast instanceof v)
     }
