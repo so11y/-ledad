@@ -6,6 +6,7 @@ import { MemberExpressionParse } from "./Ast/memberExpression"
 import { isToken, tokensTake } from "./tokensHelps";
 import { ArrayExpressionParse } from "./Ast/arrayExpression";
 import { ObjectExpressionParse } from "./Ast/objectExpression";
+import { NewExpressionParse } from "./Ast/newExpression";
 import { ExpressionStatement, ExpressionTypeEnum, isExpression } from "./AstTypes/ExpressionStatement";
 import { getKeyWordMap, ParseContext, parseInit } from "./parseRegister"
 
@@ -26,6 +27,8 @@ export const composeParse = (tokens: Array<Token>): ParseContext => {
         walkExpression(current: Token | Ast) {
             const expressionType = isExpression(current, parseContext)
             switch (expressionType) {
+                case ExpressionTypeEnum.NewExpression:
+                    return NewExpressionParse(parseContext);
                 case ExpressionTypeEnum.CallExpression:
                     return CallExpressionParse(current, parseContext);
                 case ExpressionTypeEnum.MemberExpression:

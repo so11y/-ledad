@@ -5,8 +5,9 @@ import { ArrayExpression } from "./ArrayExpression";
 import { Ast } from "./ast";
 import { CallExpression } from "./CallExpression";
 import { MemberExpression } from "./MemberExpression";
+import { NewExpression } from "./NewExpression";
 import { ObjectExpression } from "./ObjectExpression";
-import { AssignmentExpression } from "./AssignmentExpression";
+// import { AssignmentExpression } from "./AssignmentExpression";
 
 // export interface ExpressionType {
 //     CallExpression: "CallExpression"
@@ -18,13 +19,15 @@ export enum ExpressionTypeEnum {
     MemberExpression = "MemberExpression",
     ArrayExpression = "ArrayExpression",
     ObjectExpression = "ObjectExpression",
-    AssignmentExpression = "AssignmentExpression"
+    AssignmentExpression = "AssignmentExpression",
+    NewExpression = "NewExpression"
 }
 
 // export const isExpression = (token: Token, context: ParseContext): IExpressionType<ExpressionType> => {
 export const isExpression = (token: Token | Ast, context: ParseContext): ExpressionTypeEnum => {
     const takeToken = context.getToken();
     const isBrackets = takeToken.next();
+    console.log("--");
     if (token) {
         const nextToken = takeToken.next();
         if (isToken(token) && isSymbolToken(token, "[")) {
@@ -32,11 +35,9 @@ export const isExpression = (token: Token | Ast, context: ParseContext): Express
         } else if (isToken(token) && isSymbolToken(token, "{")) {
             return ExpressionTypeEnum.ObjectExpression;
         } else if (isBrackets) {
-            // if(isSymbolToken(isBrackets,"=") && nextToken){
-            //     return ExpressionTypeEnum.AssignmentExpression;
-            // }else
-            if (isToken(token) && isNameToken(token) && isSymbolToken(isBrackets, ".")) {
-                // const nextPropertyToken = takeToken.next();
+            if (isToken(token) && isNameToken(token) && token.value === "new" && !isSymbolToken(isBrackets)) {
+                return ExpressionTypeEnum.NewExpression;
+            } else if (isToken(token) && isNameToken(token) && isSymbolToken(isBrackets, ".")) {
                 if (nextToken && !isNameToken(nextToken)) {
                     throw new SyntaxError(`Unexpected token ${nextToken.value}`);
                 }
@@ -64,7 +65,8 @@ export class ExpressionStatement extends Ast {
             MemberExpression,
             CallExpression,
             ObjectExpression,
-            AssignmentExpression
+            NewExpression,
+            // AssignmentExpression
         ]
         return expressions.some(v => ast instanceof v)
     }
