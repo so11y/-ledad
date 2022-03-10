@@ -15,12 +15,8 @@ let a = {
         c:5050
     }
 };
-let q = 10;
-let df = 20;
-let g = null;
-a.b.c = {a:1},q = 10,df = 50,g = [1,23,3,5];
+a.b.c = a.d,cc=[1,3];
 
-console.log(a,q,df,g);
 `);
 
 // console.log(tokens, 2);
@@ -31,4 +27,3 @@ console.timeEnd("sss")
 console.log(ast.body);
 console.log(code);
 
-eval(code);
