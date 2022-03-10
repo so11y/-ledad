@@ -27,8 +27,6 @@ const createCallExpression = (token: Token | Ast, context: ParseContext) => {
 
 
 export const CallExpressionParse = (token: Token | Ast, context: ParseContext) => {
-    // const statement = new ExpressionStatement();
-    // statement.expression =
     return createCallExpression(token, context);;
 }
 

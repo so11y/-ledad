@@ -7,7 +7,6 @@ import { hasRegisterKey, ParseTransform } from "../parseRegister";
 import { Identifier } from "../AstTypes/Identifier";
 import { Literal } from "../AstTypes/Literal";
 import { Ast } from "../AstTypes/ast";
-import { isExpression } from "../AstTypes/ExpressionStatement";
 
 const createSimpleObjectProperty = (key: Token, value: Token) => {
     const identifier = new Identifier(key);
@@ -37,8 +36,6 @@ const createMultipleObjectExpression = (tokens: Array<Token>) => {
             //不能是符号,下一项不能是 '.' 符号
             const noSymbolTokenAndNotExpression = !isSymbolToken(beforeToken) && (!nextMaybeExpressionToKen || !isSymbolToken(nextMaybeExpressionToKen,"."))
             if (simpleAndNotKey && noSymbolTokenAndNotExpression) {
-                // if (isSimpleToken(beforeToken)) {
-
                 tokens.splice(0, 2);
                 objProperties.push(createSimpleObjectProperty(afterToken, beforeToken))
                 //其他类型重新走递归流程

@@ -61,7 +61,3 @@ export const ArrayExpressionParse: ParseTransform = (token, context) => {
     const eatToken = context.eat(startIndex, endIndex);
     return createArrayExpression(eatToken)
 }
-// export const ArrayExpressionParse = {
-//     kind: "[",
-//     transform: genArrayExpression
-// }
