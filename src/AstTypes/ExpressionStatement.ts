@@ -7,7 +7,7 @@ import { CallExpression } from "./CallExpression";
 import { MemberExpression } from "./MemberExpression";
 import { NewExpression } from "./NewExpression";
 import { ObjectExpression } from "./ObjectExpression";
-// import { AssignmentExpression } from "./AssignmentExpression";
+import { AssignmentExpression } from "./AssignmentExpression";
 
 // export interface ExpressionType {
 //     CallExpression: "CallExpression"
@@ -34,7 +34,16 @@ export const isExpression = (token: Token | Ast, context: ParseContext): Express
         } else if (isToken(token) && isSymbolToken(token, "{")) {
             return ExpressionTypeEnum.ObjectExpression;
         } else if (isBrackets) {
-            if (isToken(token) && isNameToken(token) && token.value === "new" && !isSymbolToken(isBrackets)) {
+            if (isSymbolToken(isBrackets, "=")) {
+                if (nextToken) {
+                    switch (isBrackets.value) {
+                        case "=":
+                            return ExpressionTypeEnum.AssignmentExpression;
+                    }
+                }
+                // throw new SyntaxError("'=' before need token");
+
+            } else if (isToken(token) && isNameToken(token) && token.value === "new" && !isSymbolToken(isBrackets)) {
                 return ExpressionTypeEnum.NewExpression;
             } else if (isToken(token) && isNameToken(token) && isSymbolToken(isBrackets, ".")) {
                 if (nextToken && !isNameToken(nextToken)) {
@@ -65,11 +74,11 @@ export class ExpressionStatement extends Ast {
             CallExpression,
             ObjectExpression,
             NewExpression,
-            // AssignmentExpression
+            AssignmentExpression
         ]
         return expressions.some(v => ast instanceof v)
     }
     _generator() {
-        return this.expression._generator() +";";
+        return this.expression._generator() + ";";
     }
 }

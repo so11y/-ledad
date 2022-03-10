@@ -10,10 +10,17 @@ import { tokenizer, parse ,generator } from "./ledad";
 // a.b([a,b,d,g,d.d.d]);
 console.time("sss")
 let tokens = tokenizer(`
-let a = [1,3,{a:'222'}];
-function gg(as,g){
-}
-console.log(a);
+let a = {
+    b:{
+        c:5050
+    }
+};
+let q = 10;
+let df = 20;
+let g = null;
+a.b.c = {a:1},q = 10,df = 50,g = [1,23,3,5];
+
+console.log(a,q,df,g);
 `);
 
 // console.log(tokens, 2);

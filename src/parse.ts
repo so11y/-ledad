@@ -7,6 +7,7 @@ import { isToken, tokensTake } from "./tokensHelps";
 import { ArrayExpressionParse } from "./Ast/arrayExpression";
 import { ObjectExpressionParse } from "./Ast/objectExpression";
 import { NewExpressionParse } from "./Ast/newExpression";
+import { AssignmentExpressionParse } from "./Ast/assignmentExpression";
 import { ExpressionStatement, ExpressionTypeEnum, isExpression } from "./AstTypes/ExpressionStatement";
 import { getKeyWordMap, ParseContext, parseInit } from "./parseRegister"
 
@@ -40,8 +41,11 @@ export const composeParse = (tokens: Array<Token>): ParseContext => {
                 case ExpressionTypeEnum.ObjectExpression:
                     if (isToken(current))
                         return ObjectExpressionParse(current, parseContext);
+                case ExpressionTypeEnum.AssignmentExpression:
+                    return AssignmentExpressionParse(current, parseContext);
+                default:
+                    return null;
             }
-            return null;
         },
         walk(this: ParseContext, current: Token) {
             if (keyWordMap.has(current.value)) {
@@ -77,3 +81,4 @@ export const parse = (tokens: Array<Token>) => {
     composeParse(tokens).runParse(ast.body)
     return ast
 }
+
