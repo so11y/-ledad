@@ -1,10 +1,11 @@
 import { composeParse } from "../parse";
-import { ParseTransform } from "../parseRegister";
+import { hasRegisterKey, ParseTransform } from "../parseRegister";
 import { Identifier } from "../AstTypes/Identifier";
 import { Literal } from "../AstTypes/Literal";
 import { VariableDeclarator, VariableDeclaration } from "../AstTypes/VariableDeclaration"
 import { Token } from "../tokenizer";
-import { createDumbTokens, isSimpleToken, isSymbolTokens, tokensTake, tokenTypeIsEqual } from "../tokensHelps";
+import { createDumbTokens, isSimpleToken, isSymbolToken, isSymbolTokens, tokensTake, tokenTypeIsEqual } from "../tokensHelps";
+import { isExpression } from "../AstTypes/ExpressionStatement";
 
 
 const cratedVariableDeclarator = (tokens: Array<Token>) => {
@@ -24,16 +25,27 @@ const cratedVariableDeclarator = (tokens: Array<Token>) => {
 
     const startLiteral = tokeToken.next();
 
+    const parse = composeParse(tokeToken.getRowTokens().slice(tokeToken.getIndex()));
+    //是否简单类型
+    //不能是符号
+    const simpleAndNotKey = (isSimpleToken(startLiteral) || !(hasRegisterKey(startLiteral.value)))
+    //没有在注册过关键字
+    //不能是表达式
+    const noSymbolTokenAndNotExpression = !isSymbolToken(startLiteral) && !isExpression(startLiteral, parse);
     //简单类型
     if (isSimpleToken(startLiteral)) {
         const literal = new Literal(startLiteral);
         variabledeclarator.init = literal;
-    } else {
+    }
+    else if (simpleAndNotKey && noSymbolTokenAndNotExpression) {
+        variabledeclarator.init = new Identifier(startLiteral);
+    }
+     else {
         //其他类型重新走递归流程
         tokeToken.prev(2)
         const eatTokens = tokens.slice(tokeToken.getIndex());
         //统一walk的时候不是符号token,将先消耗掉
-        if(!isSymbolTokens(startLiteral)){
+        if (!isSymbolTokens(startLiteral)) {
             eatTokens.shift();
         }
         const ObjectAST = composeParse(eatTokens).walk(startLiteral);

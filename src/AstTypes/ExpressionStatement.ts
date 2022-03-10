@@ -1,6 +1,6 @@
 import { ParseContext } from "../parseRegister";
 import { Token } from "../tokenizer";
-import { isSymbolToken, isNameToken, isToken, isSimpleToken } from "../tokensHelps";
+import { isSymbolToken, isNameToken, isToken } from "../tokensHelps";
 import { ArrayExpression } from "./ArrayExpression";
 import { Ast } from "./ast";
 import { CallExpression } from "./CallExpression";
@@ -26,17 +26,19 @@ export const isExpression = (token: Token | Ast, context: ParseContext): Express
     const takeToken = context.getToken();
     const isBrackets = takeToken.next();
     if (token) {
+        const nextToken = takeToken.next();
         if (isToken(token) && isSymbolToken(token, "[")) {
             return ExpressionTypeEnum.ArrayExpression;
         } else if (isToken(token) && isSymbolToken(token, "{")) {
             return ExpressionTypeEnum.ObjectExpression;
-        } else if (Ast.isAst(token) && isSymbolToken(isBrackets,"=")){
-            return ExpressionTypeEnum.AssignmentExpression;
         } else if (isBrackets) {
+            // if(isSymbolToken(isBrackets,"=") && nextToken){
+            //     return ExpressionTypeEnum.AssignmentExpression;
+            // }else
             if (isToken(token) && isNameToken(token) && isSymbolToken(isBrackets, ".")) {
-                const nextPropertyToken = takeToken.next();
-                if (!isNameToken(nextPropertyToken)) {
-                    throw new SyntaxError(`Unexpected token ${nextPropertyToken.value}`);
+                // const nextPropertyToken = takeToken.next();
+                if (nextToken && !isNameToken(nextToken)) {
+                    throw new SyntaxError(`Unexpected token ${nextToken.value}`);
                 }
                 return ExpressionTypeEnum.MemberExpression;
             } else if ((Ast.isAst(token) || isNameToken(token)) && isSymbolToken(isBrackets, "(")) {
