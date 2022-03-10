@@ -9,7 +9,8 @@ import { parse } from "./parse";
 //add(,2)
 // let good   =  add([1,2],2);
 let tokens = tokenizer(`
-a.b({a:g});
+let g = {a:{a:{d:[1,2,{a:s}]}}}
+a.b([a,b,d,g,d.d.d]);
 `);
 
 console.log(tokens,2);

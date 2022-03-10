@@ -22,22 +22,23 @@ const createObjectProperty = (key: Token, value: Ast) => {
 
 const createMultipleObjectExpression = (tokens: Array<Token>) => {
     const objProperties: ObjectProperty[] = [];
-    const parse = composeParse(tokens);
     while (tokens.length) {
         const afterToken = tokens.shift();
         const middleToken = tokens[0];
         if (middleToken && isSymbolToken(middleToken, ":")) {
             const beforeToken = tokens[1];
+            const nextMaybeExpressionToKen = tokens[2];
             if (isSymbolToken(beforeToken, ",")) {
                 continue;
             }
             //是否简单类型
-            //不能是符号
-            const simpleAndNotKey = (isSimpleToken(beforeToken) || !(hasRegisterKey(beforeToken.value)))
             //没有在注册过关键字
-            //不能是表达式
-            const noSymbolTokenAndNotExpression = !isSymbolToken(beforeToken) && !isExpression(beforeToken, parse);
+            const simpleAndNotKey = (isSimpleToken(beforeToken) || !(hasRegisterKey(beforeToken.value)))
+            //不能是符号,下一项不能是 '.' 符号
+            const noSymbolTokenAndNotExpression = !isSymbolToken(beforeToken) && (!nextMaybeExpressionToKen || !isSymbolToken(nextMaybeExpressionToKen,"."))
             if (simpleAndNotKey && noSymbolTokenAndNotExpression) {
+                // if (isSimpleToken(beforeToken)) {
+
                 tokens.splice(0, 2);
                 objProperties.push(createSimpleObjectProperty(afterToken, beforeToken))
                 //其他类型重新走递归流程
@@ -50,7 +51,7 @@ const createMultipleObjectExpression = (tokens: Array<Token>) => {
                 }
                 //在这里进行递归的时候
                 //把当前循环的tokens給吃掉
-                const objAst = parse.walk(beforeToken);
+                const objAst = composeParse(tokens).walk(beforeToken);
                 objProperties.push(createObjectProperty(afterToken, objAst))
             }
         }
