@@ -17,4 +17,8 @@ export class Identifier extends Ast {
         }
         this.name = t.value;
     }
+
+    _generator(): string {
+        return this.name;
+    }
 }

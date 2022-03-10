@@ -18,5 +18,8 @@ export class Literal extends Ast {
         }
         this.value = t.value;
     }
+    _generator() {
+        return this.value;
+    }
 }
 

@@ -27,7 +27,6 @@ export enum ExpressionTypeEnum {
 export const isExpression = (token: Token | Ast, context: ParseContext): ExpressionTypeEnum => {
     const takeToken = context.getToken();
     const isBrackets = takeToken.next();
-    console.log("--");
     if (token) {
         const nextToken = takeToken.next();
         if (isToken(token) && isSymbolToken(token, "[")) {
@@ -69,5 +68,8 @@ export class ExpressionStatement extends Ast {
             // AssignmentExpression
         ]
         return expressions.some(v => ast instanceof v)
+    }
+    _generator() {
+        return this.expression._generator();
     }
 }

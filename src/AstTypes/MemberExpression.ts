@@ -6,4 +6,7 @@ export class MemberExpression extends Ast {
     property:Ast;
     // computed:boolean;
     // optional:boolean;
+    _generator() {
+        return `${this.object._generator()}.${this.property._generator()}`;
+    }
 }

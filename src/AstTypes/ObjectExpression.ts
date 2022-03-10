@@ -14,15 +14,21 @@ export class ObjectProperty extends Ast {
             this.key = key;
         }
         if (value) {
-            if(value instanceof FunctionDeclaration){
+            if (value instanceof FunctionDeclaration) {
                 this.methods = true;
             }
             this.value = value
         }
+    }
+    _generator() {
+        return this.key._generator() + ":" + this.value._generator();
     }
 }
 
 export class ObjectExpression extends Ast {
     type = "ObjectExpression";
     properties: Array<ObjectProperty> = []
+    _generator() {
+        return '{' + this.properties.map(v => v._generator()).join(",") + '}';
+    }
 }
