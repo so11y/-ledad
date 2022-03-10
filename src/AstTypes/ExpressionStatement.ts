@@ -1,6 +1,6 @@
 import { ParseContext } from "../parseRegister";
 import { Token } from "../tokenizer";
-import { isSymbolToken, isNameToken, isToken } from "../tokensHelps";
+import { isSymbolToken, isNameToken, isToken, isSimpleToken } from "../tokensHelps";
 import { ArrayExpression } from "./ArrayExpression";
 import { Ast } from "./ast";
 import { CallExpression } from "./CallExpression";
@@ -14,24 +14,30 @@ import { ObjectExpression } from "./ObjectExpression";
 // type IExpressionType<T, V extends keyof T = keyof T> = V extends V ? T[V] : never;
 export enum ExpressionTypeEnum {
     CallExpression = "CallExpression",
-    MemberExpression = "MemberExpression"
-
+    MemberExpression = "MemberExpression",
+    ArrayExpression = "ArrayExpression",
+    ObjectExpression = "ObjectExpression"
 }
 
 // export const isExpression = (token: Token, context: ParseContext): IExpressionType<ExpressionType> => {
 export const isExpression = (token: Token | Ast, context: ParseContext): ExpressionTypeEnum => {
     const takeToken = context.getToken();
     const isBrackets = takeToken.next();
-    if (token && isBrackets) {
-        if (isToken(token) && isNameToken(token) && isSymbolToken(isBrackets, ".")) {
-            const nextPropertyToken = takeToken.next();
-            if (!isNameToken(nextPropertyToken)) {
-                throw new SyntaxError(`Unexpected token ${nextPropertyToken.value}`);
+    if (token) {
+        if (isToken(token) && isSymbolToken(token, "[")) {
+            return ExpressionTypeEnum.ArrayExpression;
+        } else if (isToken(token) && isSymbolToken(token, "{")) {
+            return ExpressionTypeEnum.ObjectExpression;
+        } else if (isBrackets) {
+            if (isToken(token) && isNameToken(token) && isSymbolToken(isBrackets, ".")) {
+                const nextPropertyToken = takeToken.next();
+                if (!isNameToken(nextPropertyToken)) {
+                    throw new SyntaxError(`Unexpected token ${nextPropertyToken.value}`);
+                }
+                return ExpressionTypeEnum.MemberExpression;
+            } else if ((Ast.isAst(token) || isNameToken(token)) && isSymbolToken(isBrackets, "(")) {
+                return ExpressionTypeEnum.CallExpression
             }
-            return ExpressionTypeEnum.MemberExpression;
-        }
-        if ((Ast.isAst(token) || isNameToken(token)) && isSymbolToken(isBrackets, "(")) {
-            return ExpressionTypeEnum.CallExpression
         }
     }
     return null;

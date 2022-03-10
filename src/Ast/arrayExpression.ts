@@ -5,10 +5,12 @@ import { composeParse } from "../parse";
 import { hasRegisterKey, ParseTransform } from "../parseRegister";
 import { Token } from "../tokenizer";
 import { dotTakeSection, isSimpleToken, isSymbolToken, isSymbolTokens } from "../tokensHelps";
+import { isExpression } from "../AstTypes/ExpressionStatement";
 
 
 export const iterationArrayToken = (tokens: Array<Token>) => {
     const astProperties: Ast[] = [];
+    const parse = composeParse(tokens);
     while (tokens.length) {
         const currentToken = tokens.shift();
         if (isSymbolToken(currentToken, ",")) {
@@ -16,9 +18,11 @@ export const iterationArrayToken = (tokens: Array<Token>) => {
         }
         //是否简单类型
         //不能是符号
+        const simpleAndNotKey = (isSimpleToken(currentToken) || !(hasRegisterKey(currentToken.value)))
         //没有在注册过关键字
-        // if ( (isSimpleToken(currentToken) || !(hasRegisterKey(currentToken.value))) && !isSymbolToken(currentToken) ) {
-        if (isSimpleToken(currentToken)) {
+        //不能是表达式
+        const noSymbolTokenAndNotExpression = !isSymbolToken(currentToken) && !isExpression(currentToken, parse);
+        if (simpleAndNotKey && noSymbolTokenAndNotExpression) {
             astProperties.push(new Literal(currentToken))
             //对象或者数组重新走递归流程
         } else {
@@ -27,7 +31,7 @@ export const iterationArrayToken = (tokens: Array<Token>) => {
             if (isSymbolTokens(currentToken)) {
                 tokens.unshift(currentToken);
             }
-            const ast = composeParse(tokens).walk(currentToken);
+            const ast = parse.walk(currentToken);
             if (ast) {
                 astProperties.push(ast)
             }
@@ -51,13 +55,13 @@ const createArrayExpression = (tokens: Array<Token>) => {
 }
 
 
-const genArrayExpression: ParseTransform = (token, context) => {
+export const ArrayExpressionParse: ParseTransform = (token, context) => {
     //找最外一层的对象[]
     const [startIndex, endIndex] = dotTakeSection({ startSymbol: "[", endSymbol: "]" }, context.getToken())
     const eatToken = context.eat(startIndex, endIndex);
     return createArrayExpression(eatToken)
 }
-export const ArrayExpressionParse = {
-    kind: "[",
-    transform: genArrayExpression
-}
+// export const ArrayExpressionParse = {
+//     kind: "[",
+//     transform: genArrayExpression
+// }

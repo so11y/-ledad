@@ -1,6 +1,4 @@
 import { FunctionDeclarationParse } from "./Ast/functionDeclaration";
-import { ObjectExpressionParse } from "./Ast/objectExpression";
-import { ArrayExpressionParse } from "./Ast/arrayExpression";
 import { VariableDeclarationParseConst, VariableDeclarationParseLet, VariableDeclarationParseVar } from "./Ast/variableDeclaration";
 import { Ast } from "./AstTypes/ast";
 import { Token } from "./tokenizer";
@@ -50,7 +48,7 @@ export const parseInit = () => {
     //普通function
     parseAdd(FunctionDeclarationParse)
     //字面量对象
-    parseAdd(ObjectExpressionParse)
+    // parseAdd(ObjectExpressionParse)
     //数组
-    parseAdd(ArrayExpressionParse)
+    // parseAdd(ArrayExpressionParse)
 }

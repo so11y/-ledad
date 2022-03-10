@@ -4,6 +4,8 @@ import { Ast } from "./AstTypes/ast";
 import { CallExpressionParse } from "./Ast/callExpression"
 import { MemberExpressionParse } from "./Ast/memberExpression"
 import { isToken, tokensTake } from "./tokensHelps";
+import { ArrayExpressionParse } from "./Ast/arrayExpression";
+import { ObjectExpressionParse } from "./Ast/objectExpression";
 import { ExpressionStatement, ExpressionTypeEnum, isExpression } from "./AstTypes/ExpressionStatement";
 import { getKeyWordMap, ParseContext, parseInit } from "./parseRegister"
 
@@ -12,7 +14,7 @@ import { getKeyWordMap, ParseContext, parseInit } from "./parseRegister"
  * 引用吃掉
  */
 export const composeParse = (tokens: Array<Token>): ParseContext => {
-    const  keyWordMap = getKeyWordMap();
+    const keyWordMap = getKeyWordMap();
     const parseContext = {
         eat: (start: number, end: number) => {
             return tokens.splice(start, end);
@@ -27,14 +29,18 @@ export const composeParse = (tokens: Array<Token>): ParseContext => {
                 case ExpressionTypeEnum.CallExpression:
                     return CallExpressionParse(current, parseContext);
                 case ExpressionTypeEnum.MemberExpression:
-                    if(isToken(current))
+                    if (isToken(current))
                         return MemberExpressionParse(current, parseContext);
-                    return null;
-                default:
-                    return null;
+                case ExpressionTypeEnum.ArrayExpression:
+                    if (isToken(current))
+                        return ArrayExpressionParse(current, parseContext);
+                case ExpressionTypeEnum.ObjectExpression:
+                    if (isToken(current))
+                        return ObjectExpressionParse(current, parseContext);
             }
+            return null;
         },
-        walk(this:ParseContext,current: Token) {
+        walk(this: ParseContext, current: Token) {
             if (keyWordMap.has(current.value)) {
                 return keyWordMap.get(current.value).transform(current, parseContext);
             }
