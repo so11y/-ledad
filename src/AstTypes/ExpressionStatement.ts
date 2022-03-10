@@ -70,6 +70,6 @@ export class ExpressionStatement extends Ast {
         return expressions.some(v => ast instanceof v)
     }
     _generator() {
-        return this.expression._generator();
+        return this.expression._generator() +";";
     }
 }

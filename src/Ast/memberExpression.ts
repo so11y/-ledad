@@ -42,7 +42,6 @@ export const MemberExpressionParse: ParseTransform = (token: Token, context: Par
     const eatTokens = context.eat(0, tokeToken.getIndex());
     //这个token传入当做哑token使用,因为下一次可能
     const memberExpression = createMemberExpression(token, eatTokens);
-console.log("memberExpression");
     //如果最后一项存在
     if (lastToKen) {
         //判断是否能继续语法

@@ -12,7 +12,7 @@ console.time("sss")
 let tokens = tokenizer(`
 let a = [1,3,{a:'222'}];
 const ccc = new a.g.g(a.g,{g:2,c:222,d:[1,2,{g:2}]},555);
- new a.g.g();
+ let c = new a.g.g(), geg = 202020;
 [c.d.g.wqqqqq(2,3,3,5,5,5),c.d.g.wqqqqq(2,3,3,5,5,5)];
 `);
 
