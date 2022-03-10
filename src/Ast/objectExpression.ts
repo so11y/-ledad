@@ -10,8 +10,13 @@ import { Ast } from "../AstTypes/ast";
 
 const createSimpleObjectProperty = (key: Token, value: Token) => {
     const identifier = new Identifier(key);
-    const literal = new Literal(value);
-    return new ObjectProperty(identifier, literal);
+    let value1 = null;
+    if (isSimpleToken(value)) {
+        value1 = new Literal(value)
+    } else {
+        value1 = new Identifier(value);
+    }
+    return new ObjectProperty(identifier, value1);
 }
 const createObjectProperty = (key: Token, value: Ast) => {
     const identifier = new Identifier(key);
@@ -34,7 +39,7 @@ const createMultipleObjectExpression = (tokens: Array<Token>) => {
             //没有在注册过关键字
             const simpleAndNotKey = (isSimpleToken(beforeToken) || !(hasRegisterKey(beforeToken.value)))
             //不能是符号,下一项不能是 '.' 符号
-            const noSymbolTokenAndNotExpression = !isSymbolToken(beforeToken) && (!nextMaybeExpressionToKen || !isSymbolToken(nextMaybeExpressionToKen,"."))
+            const noSymbolTokenAndNotExpression = !isSymbolToken(beforeToken) && (!nextMaybeExpressionToKen || !isSymbolToken(nextMaybeExpressionToKen, "."))
             if (simpleAndNotKey && noSymbolTokenAndNotExpression) {
                 tokens.splice(0, 2);
                 objProperties.push(createSimpleObjectProperty(afterToken, beforeToken))
@@ -64,7 +69,16 @@ const createObjectExpression = (tokens: Array<Token>) => {
 
 export const ObjectExpressionParse: ParseTransform = (token, context) => {
     //找最外一层的对象{}
-    const [startIndex, endIndex] = dotTakeSection({ startSymbol: "{", endSymbol: "}" }, context.getToken())
+    const takeTokens = context.getToken();
+    const rowToken = takeTokens.getRowTokens();
+    //进入到这里一定是token等于{ ,
+    //但是接下来的找区间希望的是双端都是对应符号的[];
+    //在如果只是ExpressionStatement表达式语句,那么一开始已经把这个头部符号给消耗掉了
+    //所以在这里先还回去
+    if (rowToken[0].value !== token.value && isSymbolToken(token, "{")) {
+        rowToken.unshift(token);
+    }
+    const [startIndex, endIndex] = dotTakeSection({ startSymbol: "{", endSymbol: "}" }, takeTokens)
     const eatToken = context.eat(startIndex, endIndex);
     return createObjectExpression(eatToken)
 }

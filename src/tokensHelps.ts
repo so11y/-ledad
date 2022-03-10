@@ -21,6 +21,9 @@ export const createDumbTokens = (ranks: Partial<Token>): Token => {
 export const tokensTake = (tokens: Array<Token>) => {
     let index = 0;
     return {
+        getRowTokens(){
+            return tokens;
+        },
         getIndex() {
             return index;
         },

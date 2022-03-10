@@ -10,7 +10,6 @@ import { tokenizer, parse } from "./ledad";
 // a.b([a,b,d,g,d.d.d]);
 console.time("sss")
 let tokens = tokenizer(`
-
 `);
 
 // console.log(tokens, 2);

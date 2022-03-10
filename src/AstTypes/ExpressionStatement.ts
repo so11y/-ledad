@@ -6,6 +6,7 @@ import { Ast } from "./ast";
 import { CallExpression } from "./CallExpression";
 import { MemberExpression } from "./MemberExpression";
 import { ObjectExpression } from "./ObjectExpression";
+import { AssignmentExpression } from "./AssignmentExpression";
 
 // export interface ExpressionType {
 //     CallExpression: "CallExpression"
@@ -16,7 +17,8 @@ export enum ExpressionTypeEnum {
     CallExpression = "CallExpression",
     MemberExpression = "MemberExpression",
     ArrayExpression = "ArrayExpression",
-    ObjectExpression = "ObjectExpression"
+    ObjectExpression = "ObjectExpression",
+    AssignmentExpression = "AssignmentExpression"
 }
 
 // export const isExpression = (token: Token, context: ParseContext): IExpressionType<ExpressionType> => {
@@ -28,6 +30,8 @@ export const isExpression = (token: Token | Ast, context: ParseContext): Express
             return ExpressionTypeEnum.ArrayExpression;
         } else if (isToken(token) && isSymbolToken(token, "{")) {
             return ExpressionTypeEnum.ObjectExpression;
+        } else if (Ast.isAst(token) && isSymbolToken(isBrackets,"=")){
+            return ExpressionTypeEnum.AssignmentExpression;
         } else if (isBrackets) {
             if (isToken(token) && isNameToken(token) && isSymbolToken(isBrackets, ".")) {
                 const nextPropertyToken = takeToken.next();
@@ -58,6 +62,7 @@ export class ExpressionStatement extends Ast {
             MemberExpression,
             CallExpression,
             ObjectExpression,
+            AssignmentExpression
         ]
         return expressions.some(v => ast instanceof v)
     }
