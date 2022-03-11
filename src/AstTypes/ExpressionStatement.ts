@@ -9,6 +9,7 @@ import { NewExpression } from "./NewExpression";
 import { ObjectExpression } from "./ObjectExpression";
 import { AssignmentExpression } from "./AssignmentExpression";
 import { SequenceExpression } from "./SequenceExpression";
+import { BinaryExpression } from "./BinaryExpression";
 
 // export interface ExpressionType {
 //     CallExpression: "CallExpression"
@@ -21,7 +22,8 @@ export enum ExpressionTypeEnum {
     ArrayExpression = "ArrayExpression",
     ObjectExpression = "ObjectExpression",
     AssignmentExpression = "AssignmentExpression",
-    NewExpression = "NewExpression"
+    NewExpression = "NewExpression",
+    BinaryExpression = "BinaryExpression"
 }
 
 // export const isExpression = (token: Token, context: ParseContext): IExpressionType<ExpressionType> => {
@@ -35,14 +37,18 @@ export const isExpression = (token: Token | Ast, context: ParseContext): Express
         } else if (isToken(token) && isSymbolToken(token, "{")) {
             return ExpressionTypeEnum.ObjectExpression;
         } else if (isBrackets) {
-            if (isSymbolToken(isBrackets, "=")) {
+            if (isSymbolToken(isBrackets)) {
                 if (nextToken) {
                     switch (isBrackets.value) {
                         case "=":
                             return ExpressionTypeEnum.AssignmentExpression;
+                        case "+":
+                        case "-":
+                        case "*":
+                        case "/":
+                            return ExpressionTypeEnum.BinaryExpression;
                     }
                 }
-                // throw new SyntaxError("'=' before need token");
 
             } else if (isToken(token) && isNameToken(token) && token.value === "new" && !isSymbolToken(isBrackets)) {
                 return ExpressionTypeEnum.NewExpression;
@@ -76,7 +82,8 @@ export class ExpressionStatement extends Ast {
             ObjectExpression,
             NewExpression,
             AssignmentExpression,
-            SequenceExpression
+            SequenceExpression,
+            BinaryExpression
         ]
         return expressions.some(v => ast instanceof v)
     }

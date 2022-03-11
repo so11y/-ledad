@@ -8,6 +8,7 @@ import { ArrayExpressionParse } from "./Ast/arrayExpression";
 import { ObjectExpressionParse } from "./Ast/objectExpression";
 import { NewExpressionParse } from "./Ast/newExpression";
 import { AssignmentExpressionParse } from "./Ast/assignmentExpression";
+import { BinaryExpressionParse } from "./Ast/binaryExpression";
 import { ExpressionStatement, ExpressionTypeEnum, isExpression } from "./AstTypes/ExpressionStatement";
 import { getKeyWordMap, ParseContext, parseInit } from "./parseRegister"
 
@@ -43,6 +44,8 @@ export const composeParse = (tokens: Array<Token>): ParseContext => {
                         return ObjectExpressionParse(current, parseContext);
                 case ExpressionTypeEnum.AssignmentExpression:
                     return AssignmentExpressionParse(current, parseContext);
+                case ExpressionTypeEnum.BinaryExpression:
+                    return BinaryExpressionParse(current, parseContext);
                 default:
                     return null;
             }
