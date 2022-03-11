@@ -9,28 +9,31 @@ import { tokenizer, parse ,generator } from "./ledad";
 // let g = {a:{a:{d:[1,2,{a:s}]}}}
 // a.b([a,b,d,g,d.d.d]);
 
+// let p = 10 + 10 + 10,g = 50 + 50,b = [1,2,3,5];
+// let a =10,b = 30,c =780,p = 10 + 10;
+// let p = {
+//     pp:[20,{a:1}]
+// };
 
+// p.pp.push([222,999]);
+// var tt = a+b;
+// a = a.d + b.b,b+b;
+// console.log(p,tt);
+// c(a+5,a+c,[2,{c:3,d:g.g.g.g},4,]);
 console.time("编译用时:")
 let tokens = tokenizer(`
-let a =10,b = 30,c =780;
-const p = {
-    pp:[20,{a:1}]
-};
 
-p.pp.push([222,999]);
-
-var tt = a+b;
-
-d++;
-
-console.log(p,tt);
-
+a = a.d + b.b,b+b;
 `);
 
 // console.log(tokens, 2);
 
 let ast = parse(tokens);
+
+//
+// ast.body[0].kind = "const";
 let code = generator(ast.body);
+
 console.timeEnd("编译用时:")
 console.group();
 console.log("打印代码Ast:");

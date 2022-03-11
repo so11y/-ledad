@@ -29,17 +29,20 @@ export const operatorAstCreate = (token: Token | Ast, context: ParseContext, cre
     expression.operator = operatorSymbol.value;
     if (nextToken) {
         const express = context.walk(nextToken);
-        if (express) {
-            expression.right = express;
+        if (!isSymbolToken(nextToken)) {
+            expression.right = createSimpleToken(nextToken);
         } else {
-            if (!isSymbolToken(nextToken)) {
-                expression.right = createSimpleToken(nextToken);
-            } else {
-                throw new SyntaxError(" Assignment miss right");
-            }
+            throw new SyntaxError(" Assignment miss right");
         }
         const isDot = takeToken.getRowTokens()[0];
         if (isDot && isSymbolToken(isDot, ",")) {
+            if (express) {
+                if(express instanceof SequenceExpression){
+                    expression.right = express.expressions[0];
+                }else{
+                    expression.right = express;
+                }
+            }
             //先吃掉这个逗号
             context.eat(0, 1);
             //吃掉下一个的开头
@@ -49,20 +52,32 @@ export const operatorAstCreate = (token: Token | Ast, context: ParseContext, cre
             //应为是逗号
             sequenceExpression.expressions.push(expression);
             //是逗号所有直接吃掉当前这一行
-            takeToken.whereToken((isSymbol) => isSymbol.value != ";");
+            takeToken.whereToken((isSymbol) => {
+                return isSymbol && (isSymbol.value != ";" && isSymbol.value != ")")
+            });
             const eatToken = context.eat(0, takeToken.getIndex());
-            //开始递归
-            const exAst = composeParse(eatToken).walk(nextHead);
-            if (exAst) {
-                //SequenceExpression只能有一个
-                //把下次递归的解构出来保证只有一个
-                if (exAst instanceof SequenceExpression) {
-                    sequenceExpression.expressions = [...sequenceExpression.expressions, ...exAst.expressions];
-                } else {
-                    sequenceExpression.expressions.push(exAst);
+            if (nextHead) {
+                //开始递归
+                const exAst = composeParse(eatToken).walk(nextHead);
+                if (exAst) {
+                    //SequenceExpression只能有一个
+                    //把下次递归的解构出来保证只有一个
+                    if (exAst instanceof SequenceExpression) {
+                        sequenceExpression.expressions = [...sequenceExpression.expressions, ...exAst.expressions];
+                    } else {
+                        sequenceExpression.expressions.push(exAst);
+                    }
                 }
             }
             return sequenceExpression;
+        }else{
+            if (express) {
+                if(express instanceof SequenceExpression){
+                    expression.right = express.expressions[0];
+                }else{
+                    expression.right = express;
+                }
+            }
         }
     }
     return expression;
