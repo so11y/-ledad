@@ -8,16 +8,39 @@ import { tokenizer, parse ,generator } from "./ledad";
 // let good   =  add([1,2],2);
 // let g = {a:{a:{d:[1,2,{a:s}]}}}
 // a.b([a,b,d,g,d.d.d]);
-console.time("sss")
+
+
+console.time("编译用时:")
 let tokens = tokenizer(`
-a + b,a - 1020;
+let a =10,b = 30,c =780;
+const p = {
+    pp:[20,{a:1}]
+};
+
+p.pp.push([222,999]);
+
+var tt = a+b;
+
+console.log(p,tt);
+
 `);
 
 // console.log(tokens, 2);
 
 let ast = parse(tokens);
 let code = generator(ast.body);
-console.timeEnd("sss")
+console.timeEnd("编译用时:")
+console.group();
+console.log("打印代码Ast:");
 console.log(ast.body);
+console.groupEnd();
+console.log("--------分割线--------");
+console.group();
+console.log("打印编译代码:");
 console.log(code);
+console.groupEnd();
+
+console.log("--------分割线--------");
+console.log('--------开始执行------');
+eval(code);
 

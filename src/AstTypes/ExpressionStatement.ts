@@ -37,19 +37,15 @@ export const isExpression = (token: Token | Ast, context: ParseContext): Express
         } else if (isToken(token) && isSymbolToken(token, "{")) {
             return ExpressionTypeEnum.ObjectExpression;
         } else if (isBrackets) {
-            if (isSymbolToken(isBrackets)) {
+            if (isSymbolToken(isBrackets, "=")) {
                 if (nextToken) {
                     switch (isBrackets.value) {
                         case "=":
                             return ExpressionTypeEnum.AssignmentExpression;
-                        case "+":
-                        case "-":
-                        case "*":
-                        case "/":
-                            return ExpressionTypeEnum.BinaryExpression;
                     }
                 }
-
+            } else if (["+", "-", "*", "/"].some(v => isSymbolToken(isBrackets, v))) {
+                return ExpressionTypeEnum.BinaryExpression;
             } else if (isToken(token) && isNameToken(token) && token.value === "new" && !isSymbolToken(isBrackets)) {
                 return ExpressionTypeEnum.NewExpression;
             } else if (isToken(token) && isNameToken(token) && isSymbolToken(isBrackets, ".")) {

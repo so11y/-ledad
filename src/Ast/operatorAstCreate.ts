@@ -39,7 +39,7 @@ export const operatorAstCreate = (token: Token | Ast, context: ParseContext, cre
             }
         }
         const isDot = takeToken.getRowTokens()[0];
-        if (isSymbolToken(isDot, ",")) {
+        if (isDot && isSymbolToken(isDot, ",")) {
             //先吃掉这个逗号
             context.eat(0, 1);
             //吃掉下一个的开头
