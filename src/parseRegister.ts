@@ -3,6 +3,9 @@ import { VariableDeclarationParseConst, VariableDeclarationParseLet, VariableDec
 import { Ast } from "./AstTypes/ast";
 import { Token } from "./tokenizer";
 import { tokensTake } from "./tokensHelps";
+import { ForStatementParse } from "./Ast/forStatement";
+import { IfStatementParse } from "./Ast/ifStatement";
+import { ReturnStatementParse } from "./Ast/returnStatement";
 
 
 export interface ParseContext {
@@ -47,8 +50,10 @@ export const parseInit = () => {
     parseAdd(VariableDeclarationParseVar)
     //普通function
     parseAdd(FunctionDeclarationParse)
-    //字面量对象
-    // parseAdd(ObjectExpressionParse)
-    //数组
-    // parseAdd(ArrayExpressionParse)
+    //for关键字
+    parseAdd(ForStatementParse)
+    //if關鍵字
+    parseAdd(IfStatementParse)
+    //return
+    parseAdd(ReturnStatementParse)
 }

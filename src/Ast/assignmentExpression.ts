@@ -12,6 +12,5 @@ const createAssignmentExpression = (token: Token | Ast) => {
 }
 
 export const AssignmentExpressionParse = (token: Token | Ast, context: ParseContext) => {
-    console.log(token,"-----");
     return operatorAstCreate(token, context, createAssignmentExpression);
 }

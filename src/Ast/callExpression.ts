@@ -5,7 +5,7 @@ import { Token } from "../tokenizer";
 import { dotTakeSection, isToken } from "../tokensHelps";
 import { Identifier } from "../AstTypes/Identifier";
 import { iterationArrayToken } from "./arrayExpression";
-import { Ast } from "src/AstTypes/ast";
+import { Ast } from "../AstTypes/ast";
 
 const createCallee = (token: Token | Ast):Ast => {
     if (token && isToken(token)) {

@@ -48,7 +48,7 @@ export const isExpression = (token: Token | Ast, context: ParseContext): Express
                     return ExpressionTypeEnum.AssignmentExpression;
                 }
                 //运算符加减乘除
-            } else if (["+", "-", "*", "/"].some(v => isSymbolToken(isBrackets, v))) {
+            } else if (["+", "-", "*", "/","<",">"].some(v => isSymbolToken(isBrackets, v))) {
                 if (nextToken) {
                     return ExpressionTypeEnum.BinaryExpression;
                 }

@@ -1,3 +1,4 @@
+import { composeParse } from "../parse";
 import { BlockStatement } from "../AstTypes/BlockStatement";
 import { FunctionDeclaration } from "../AstTypes/FunctionDeclaration";
 import { Identifier } from "../AstTypes/Identifier";
@@ -11,6 +12,7 @@ const genFunctionDeclaration: ParseTransform = (token, context) => {
     const blockStatement = new BlockStatement();
     funAst.id = identifier;
     funAst.body = blockStatement;
+    blockStatement.body = [];
     const t = context.getToken();
     const isVariable = t.next();
     if (!isSymbolToken(isVariable, "(")) {
@@ -20,7 +22,7 @@ const genFunctionDeclaration: ParseTransform = (token, context) => {
         identifier.initialize(isVariable)
         //吃掉之前使用过的token
         context.eat(0, t.getIndex());
-    }else{
+    } else {
         funAst.id = null;
     }
     //重新恢复指针
@@ -36,7 +38,10 @@ const genFunctionDeclaration: ParseTransform = (token, context) => {
         funAst.params = paramsTokens.map(v => new Identifier(v));
         const [bodyStart, bodyEndIndex] = dotTakeSection({ startSymbol: "{", endSymbol: "}" }, t)
         const bodyTokens = context.eat(bodyStart, bodyEndIndex);
-
+        //丢弃两端的括号
+        bodyTokens.shift();
+        bodyTokens.pop();
+        composeParse(bodyTokens).runParse(blockStatement.body);
     } catch (e) {
         if (e instanceof TokenParseError) {
             if (e.errorCode === TokenParseErrors.startNotFind)

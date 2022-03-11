@@ -51,7 +51,7 @@ export const tokensTake = (tokens: Array<Token>) => {
         },
         whereToken(whereBack: (token: Token) => boolean) {
             let isEnd = this.next();
-            while (whereBack(isEnd)) {
+            while (isEnd && whereBack(isEnd)) {
                 isEnd = this.next();
             }
             return isEnd || false;
