@@ -49,19 +49,24 @@ export const operatorAstCreate = (token: Token | Ast, context: ParseContext, cre
             //应为是逗号
             sequenceExpression.expressions.push(expression);
             //是逗号所有直接吃掉当前这一行
-            takeToken.whereToken((isSymbol) => isSymbol.value != ";");
+            takeToken.whereToken((isSymbol) => {
+                return isSymbol && (isSymbol.value != ";" && isSymbol.value != ")")
+            });
             const eatToken = context.eat(0, takeToken.getIndex());
-            //开始递归
-            const exAst = composeParse(eatToken).walk(nextHead);
-            if (exAst) {
-                //SequenceExpression只能有一个
-                //把下次递归的解构出来保证只有一个
-                if (exAst instanceof SequenceExpression) {
-                    sequenceExpression.expressions = [...sequenceExpression.expressions, ...exAst.expressions];
-                } else {
-                    sequenceExpression.expressions.push(exAst);
+            if (nextHead) {
+                //开始递归
+                const exAst = composeParse(eatToken).walk(nextHead);
+                if (exAst) {
+                    //SequenceExpression只能有一个
+                    //把下次递归的解构出来保证只有一个
+                    if (exAst instanceof SequenceExpression) {
+                        sequenceExpression.expressions = [...sequenceExpression.expressions, ...exAst.expressions];
+                    } else {
+                        sequenceExpression.expressions.push(exAst);
+                    }
                 }
             }
+
             return sequenceExpression;
         }
     }
