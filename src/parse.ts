@@ -9,6 +9,7 @@ import { ObjectExpressionParse } from "./Ast/objectExpression";
 import { NewExpressionParse } from "./Ast/newExpression";
 import { AssignmentExpressionParse } from "./Ast/assignmentExpression";
 import { BinaryExpressionParse } from "./Ast/binaryExpression";
+import { UpdateExpressionParse } from "./Ast/updateExpression";
 import { ExpressionStatement, ExpressionTypeEnum, isExpression } from "./AstTypes/ExpressionStatement";
 import { getKeyWordMap, ParseContext, parseInit } from "./parseRegister"
 
@@ -46,6 +47,8 @@ export const composeParse = (tokens: Array<Token>): ParseContext => {
                     return AssignmentExpressionParse(current, parseContext);
                 case ExpressionTypeEnum.BinaryExpression:
                     return BinaryExpressionParse(current, parseContext);
+                case ExpressionTypeEnum.UpdateExpression:
+                    return UpdateExpressionParse(current, parseContext);
                 default:
                     return null;
             }

@@ -21,6 +21,8 @@ p.pp.push([222,999]);
 
 var tt = a+b;
 
+d++;
+
 console.log(p,tt);
 
 `);
@@ -42,5 +44,5 @@ console.groupEnd();
 
 console.log("--------分割线--------");
 console.log('--------开始执行------');
-eval(code);
+// eval(code);
 
