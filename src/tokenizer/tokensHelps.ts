@@ -1,4 +1,5 @@
 import { Token } from "./tokenizer";
+import { isSymbol } from "./types";
 
 interface DotSymbol {
     startSymbol: string;
@@ -14,20 +15,19 @@ export class TokenParseError extends SyntaxError {
     }
 }
 
-export const createDumbTokens = (ranks: Partial<Token>): Token => {
-    return Object.assign(ranks, { type: "symbol", start: 0, end: 0, value: "=" })
-}
-
 export const tokensTake = (tokens: Array<Token>) => {
     let index = 0;
     return {
-        getRowTokens(){
+        eat: (start: number, end: number) => {
+            return tokens.splice(start, end);
+        },
+        getRowTokens() {
             return tokens;
         },
         getIndex() {
             return index;
         },
-        getToken(index:number){
+        getToken(index: number) {
             return tokens[index]
         },
         prev(p?: number) {
@@ -51,7 +51,7 @@ export const tokensTake = (tokens: Array<Token>) => {
         },
         whereToken(whereBack: (token: Token) => boolean) {
             let isEnd = this.next();
-            while (whereBack(isEnd)) {
+            while (isEnd && whereBack(isEnd)) {
                 isEnd = this.next();
             }
             return isEnd || false;
@@ -84,41 +84,15 @@ export const dotTakeSection = (dot: DotSymbol, tokens: ReturnType<typeof tokensT
     return [startIndex, tokens.getIndex()];
 }
 
-export const getTokenTypes = (tokens: Array<Token>, type: string) => {
-    return tokens.filter(v => v.type === type);
-}
-//tokenTypeIsName
-export const isNameToken = (token: Token) => {
-    return token.type === "name";
-}
 
-export const isToken = (token:any):token is Token=>{
-    return token.type && (token.value != undefined)
-}
-
-export const tokenTypeIsEqual = (token: Token) => {
-    return isSymbolToken(token, "=");
-}
-
-export const isSymbolToken = (token: Token, value?: string) => {
-    if (!value) {
-        return token.type === "symbol";
+export const eatRow = (tokens: Array<Token>) => {
+    const takeToken = tokensTake(tokens);
+    const isSemicolon = takeToken.whereToken((v) => !isSymbol(v, ";"));
+    if(isSemicolon && isSymbol(isSemicolon,";")){
+        const eat = takeToken.eat(0,takeToken.getIndex());
+        //丢弃最后一个分号
+        eat.pop();
+        return eat;
     }
-    return token.type === "symbol" && token.value === value;
-}
-
-export const isSimpleToken = (token: Token) => {
-    return token.type === "string" || token.type === "number";
-}
-
-export const isFunctionToken = (token: Token) => {
-    return token.type === "name" && token.value === "function";
-}
-
-export const parseCanWalk = (token: Token) => {
-    return isFunctionToken(token) || ["{", "[",].some((v) => isSymbolToken(token, v))
-}
-
-export const isSymbolTokens = (tokens: Token) => {
-    return ["{", "[",].some((v) => isSymbolToken(tokens, v))
+    return null;
 }
