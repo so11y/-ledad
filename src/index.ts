@@ -12,8 +12,6 @@ import { tokenizer, parse ,generator } from "./ledad";
 
 console.time("编译用时:")
 let tokens = tokenizer(`
-let  p = 10+10;
-d(a+3,[3,2,2])
 
 `);
 
