@@ -32,12 +32,12 @@ export const initFunctionDeclaration = (
   const _function = createFunction(type);
   const parentScope = parseContext.currentScope();
   parseContext.enterScope(2);
-  parseContext.eat(MachineType.FUNCTION);
+  parseContext.expect(MachineType.FUNCTION);
   if (parseContext.currentTokenType === MachineType.IDENTIFIER) {
     _function.id = parseExpression(parseContext) as Identifier;
     parentScope.addFunctionScope(_function.id.name);
   }
-  parseContext.eat(MachineType.LEFTPARENTHESES);
+  parseContext.expect(MachineType.LEFTPARENTHESES);
   while (!parseContext.eat(MachineType.RIGHTPARENTHESES)) {
     _function.params.push(parseExpression(parseContext));
     //eat next MachineType.COMMA

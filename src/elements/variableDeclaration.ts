@@ -17,7 +17,7 @@ class VariableDeclarator implements Ast {
 const initVariableDeclarator = (parseContext: ParseContext, kind: Variable) => {
   const variableDeclarator = new VariableDeclarator();
   variableDeclarator.id = parseExpression(parseContext);
-  parseContext.eat(MachineType.EQUALLING);
+  parseContext.expect(MachineType.EQUALLING);
   variableDeclarator.init = parseExpression(parseContext);
   if (variableDeclarator.id instanceof Identifier) {
     parseContext.currentScope().addVarScope(variableDeclarator.id.name, kind);

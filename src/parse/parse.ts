@@ -43,6 +43,7 @@ export class ParseContext {
     const scope = this.currentVarScope();
     return scope ? true : false;
   }
+
   currentScope() {
     const currentScope = this.scopeStack[this.scopeStack.length - 1];
     const lets = currentScope.var.filter((v) => v.kind === MachineType.LET);
@@ -121,6 +122,12 @@ export class ParseContext {
 
   raise(message: string) {
     throw new SyntaxError(message);
+  }
+
+  expect(type: MachineType){
+    if(!this.eat(type)){
+      this.raise("Unexpected token");
+    }
   }
 }
 class Program implements Ast {

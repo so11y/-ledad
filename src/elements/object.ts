@@ -25,7 +25,7 @@ const initProperty = (parseContext: ParseContext) => {
 
 export const initObjectExpression = (parseContext: ParseContext) => {
   const objectExpression = new ObjectExpression();
-  parseContext.eat(MachineType.LEFTCURLYBRACES);
+  parseContext.expect(MachineType.LEFTCURLYBRACES);
   while (!parseContext.eat(MachineType.RIGHTCURLYBRACES)) {
     objectExpression.properties.push(initProperty(parseContext));
     //eat next MachineType.COMMA

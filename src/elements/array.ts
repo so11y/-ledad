@@ -10,7 +10,7 @@ class ArrayExpression implements Ast {
 
 export const initArrayExpression = (parseContext: ParseContext) => {
   const arrayExpression = new ArrayExpression();
-  parseContext.eat(MachineType.LEFTSQUAREBRACKETS);
+  parseContext.expect(MachineType.LEFTSQUAREBRACKETS);
   while (!parseContext.eat(MachineType.RIGHTSQUAREBRACKETS)) {
     arrayExpression.elements.push(parseExpression(parseContext,{
       functionType:false

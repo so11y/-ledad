@@ -28,7 +28,6 @@ export const parseExpression = (
   options = { functionType: true }
 ): Ast => {
   switch (parseContext.tokenType()) {
-    //@ts-ignore
     case MachineType.LEFTCURLYBRACES:
       return initObjectExpression(parseContext);
     case MachineType.SEMICOLON:
@@ -43,7 +42,7 @@ export const parseExpression = (
     case MachineType.FUNCTION:
       return initFunctionDeclaration(parseContext, options.functionType);
     default:
-      console.log("什么情况?->>", parseContext.tokenType());
+      parseContext.raise(`什么情况?->>${parseContext.tokenType()}`);
       break;
   }
 };
