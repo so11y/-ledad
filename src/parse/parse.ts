@@ -1,11 +1,26 @@
 import { Ast } from "../share/types";
 import { helpToken } from "./helpToken";
-import { MachineType } from "./MachineType";
+import { MachineType, Variable } from "./MachineType";
 import { parseStatement } from "./parseStatementOrExpression";
 import { Token } from "./tokenizer";
 
+class Scope {
+  flags: number;
+  var: Array<{
+    name: string;
+    kind: Variable;
+  }> = [];
+  functions: Array<string> = [];
+  constructor(flags: number) {
+    this.flags = flags;
+  }
+}
+
 export class ParseContext {
-  constructor(private tokens: Array<Token>) {}
+  scopeStack: Array<Scope> = [];
+  constructor(private tokens: Array<Token>) {
+    this.enterScope(1);
+  }
 
   tokenType(token?: Token) {
     if (!token) token = this.tokens[0];
@@ -24,6 +39,70 @@ export class ParseContext {
     return this.tokens[0];
   }
 
+  get inFunction() {
+    const scope = this.currentVarScope();
+    return scope ? true : false;
+  }
+  currentScope() {
+    const currentScope = this.scopeStack[this.scopeStack.length - 1];
+    const lets = currentScope.var.filter((v) => v.kind === MachineType.LET);
+    const consts = currentScope.var.filter((v) => v.kind === MachineType.CONST);
+    const functions = currentScope.functions;
+    return {
+      currentScope,
+      addFunctionScope: (name: string) => {
+        if (
+          lets.every((v) => v.name !== name) &&
+          consts.every((v) => v.name !== name)
+        ) {
+          currentScope.functions.push(name);
+          return;
+        }
+        this.raise(`Identifier '${name}' has already been declared`);
+      },
+      addVarScope: (name: string, kind: Variable) => {
+        switch (kind) {
+          case MachineType.VAR:
+            if (
+              lets.every((v) => v.name !== name) &&
+              consts.every((v) => v.name !== name)
+            ) {
+              currentScope.var.push({
+                kind,
+                name,
+              });
+              return;
+            }
+            this.raise(`Identifier '${name}' has already been declared`);
+            break;
+          default:
+            if (
+              lets.every((v) => v.name !== name) &&
+              consts.every((v) => v.name !== name) &&
+              functions.every((v) => v !== name)
+            ) {
+              currentScope.var.push({
+                kind,
+                name,
+              });
+              return;
+            }
+            this.raise(`Identifier '${name}' has already been declared`);
+            break;
+        }
+      },
+    };
+  }
+
+  currentVarScope() {
+    for (var i = this.scopeStack.length - 1; ; i--) {
+      var scope = this.scopeStack[i];
+      if (scope.flags > 1) {
+        return scope;
+      }
+    }
+  }
+
   eat(type: MachineType) {
     if (this.currentTokenType === type) {
       this.tokens.shift();
@@ -31,6 +110,17 @@ export class ParseContext {
     } else {
       return false;
     }
+  }
+
+  enterScope(flags: number) {
+    this.scopeStack.push(new Scope(flags));
+  }
+  exitScope() {
+    this.scopeStack.pop();
+  }
+
+  raise(message: string) {
+    throw new SyntaxError(message);
   }
 }
 class Program implements Ast {

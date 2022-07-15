@@ -1,6 +1,6 @@
 import { Ast } from "../share/types";
 
-class Identifier implements Ast {
+export class Identifier implements Ast {
   type = "Identifier";
   name: string;
 }

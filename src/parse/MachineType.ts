@@ -16,3 +16,5 @@ export enum MachineType {
   LEFTPARENTHESES = "(",//左圆括号
   RIGHTPARENTHESES = ")"//右圆括号
 }
+
+export type Variable  = MachineType.LET | MachineType.CONST | MachineType.VAR;

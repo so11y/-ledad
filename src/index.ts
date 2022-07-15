@@ -2,9 +2,8 @@ import { parse } from "./parse/parse";
 import { tokenizer } from "./parse/tokenizer";
 
 let tokens = tokenizer(`
-function good2(c){
-
-}
+let a = 1;
+let a = 2;
 
 `);
 console.log(parse(tokens));
