@@ -26,7 +26,7 @@ const normalizationIDENTIFIER = (parseContext: ParseContext) => {
   return node;
 };
 
-export const parseExpressionAndStatement = (
+const parseExpressionAndStatement = (
   parseContext: ParseContext,
   options = { functionType: true }
 ): Ast => {
@@ -63,11 +63,20 @@ const parseSubscripts = (parseContext: ParseContext): Ast => {
   }
 };
 
+//用于parse一系列的操作符
 const parseSubscript = (parseContext: ParseContext, element: Ast) => {
   if (parseContext.eat(MachineType.DOT)) {
     return initMemberExpression(parseContext, element);
   }
   return element;
+};
+
+const parseMaybeSequence = (children: Array<Ast>) => {
+  let node = children[0];
+  if (children.length > 1) {
+    node = initSequenceExpression(children);
+  }
+  return initExpressionStatement(node);
 };
 
 export const parseExpression = (
@@ -94,14 +103,6 @@ export const parseExpression = (
       break;
   }
   return null;
-};
-
-const parseMaybeSequence = (children: Array<Ast>) => {
-  let node = children[0];
-  if (children.length > 1) {
-    node = initSequenceExpression(children);
-  }
-  return initExpressionStatement(node);
 };
 
 export const parseStatement = (
