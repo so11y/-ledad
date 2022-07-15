@@ -9,6 +9,7 @@ import { initLiteral } from "../elements/literal";
 import { initObjectExpression } from "../elements/object";
 import { initArrayExpression } from "../elements/array";
 import { initFunctionDeclaration } from "../elements/function";
+import { initIfStatement } from "../elements/IfStatement";
 
 const normalizationIDENTIFIER = (parseContext: ParseContext) => {
   let node;
@@ -69,6 +70,8 @@ export const parseStatement = (
       break;
     case MachineType.FUNCTION:
       return initFunctionDeclaration(parseContext, options.functionType);
+    case MachineType.IF:
+      return initIfStatement(parseContext);
     default:
       const children: Array<Ast> = [];
       children.push(parseExpression(parseContext));

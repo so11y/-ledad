@@ -23,7 +23,7 @@ export class ParseContext {
   }
 
   tokenType(token?: Token) {
-    if(!this.tokens.length){
+    if(!this.isOFEnd){
       return MachineType.EOF
     }
     if (!token) token = this.tokens[0];
@@ -150,7 +150,6 @@ class Program implements Ast {
 export const parse = (tokens: Array<Token>): Program => {
   const program = new Program();
   const parseContext = new ParseContext(tokens);
-  console.log(parseContext.inFunction);
   while (parseContext.isOFEnd) {
     const element = parseStatement(parseContext);
     if (element) {

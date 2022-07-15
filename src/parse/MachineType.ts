@@ -1,5 +1,5 @@
 export enum MachineType {
-  EOF = "eof",// token end
+  EOF = "eof", // token end
   LET = "let", //let 关键字
   VAR = "var", //var 关键字
   CONST = "const", //count 关键字
@@ -10,12 +10,13 @@ export enum MachineType {
   RIGHTCURLYBRACES = "}", //右括号
   IDENTIFIER = "identifier", //标识符
   COMMA = ",", //逗号
-  COLON = ":",//冒号
-  LEFTSQUAREBRACKETS = "[",//左中括号
-  RIGHTSQUAREBRACKETS = "]",//右中括号
-  FUNCTION ="function",//function 关键字
-  LEFTPARENTHESES = "(",//左圆括号
-  RIGHTPARENTHESES = ")"//右圆括号
+  COLON = ":", //冒号
+  LEFTSQUAREBRACKETS = "[", //左中括号
+  RIGHTSQUAREBRACKETS = "]", //右中括号
+  FUNCTION = "function", //function 关键字
+  LEFTPARENTHESES = "(", //左圆括号
+  RIGHTPARENTHESES = ")", //右圆括号
+  IF = "if", //if关键字
 }
 
-export type Variable  = MachineType.LET | MachineType.CONST | MachineType.VAR;
+export type Variable = MachineType.LET | MachineType.CONST | MachineType.VAR;
