@@ -10,6 +10,7 @@ import { initObjectExpression } from "../elements/object";
 import { initArrayExpression } from "../elements/array";
 import { initFunctionDeclaration } from "../elements/function";
 import { initIfStatement } from "../elements/IfStatement";
+import { initReturnStatement } from "../elements/returnStatement";
 
 const normalizationIDENTIFIER = (parseContext: ParseContext) => {
   let node;
@@ -40,6 +41,8 @@ export const parseExpression = (
       const node = normalizationIDENTIFIER(parseContext);
       parseContext.eat(MachineType.IDENTIFIER);
       return node;
+    case MachineType.IF:
+      return initIfStatement(parseContext);
     case MachineType.FUNCTION:
       return initFunctionDeclaration(parseContext, options.functionType);
     default:
@@ -72,6 +75,8 @@ export const parseStatement = (
       return initFunctionDeclaration(parseContext, options.functionType);
     case MachineType.IF:
       return initIfStatement(parseContext);
+    case MachineType.RETURN:
+      return initReturnStatement(parseContext);
     default:
       const children: Array<Ast> = [];
       children.push(parseExpression(parseContext));

@@ -17,6 +17,8 @@ export const helpToken = (token: Token) => {
           return MachineType.FUNCTION;
         case "if":
           return MachineType.IF;
+        case "return":
+          return MachineType.RETURN;
         default:
           return MachineType.IDENTIFIER;
       }
