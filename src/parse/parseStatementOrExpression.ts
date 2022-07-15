@@ -12,6 +12,7 @@ import { initFunctionDeclaration } from "../elements/function";
 import { initIfStatement } from "../elements/IfStatement";
 import { initReturnStatement } from "../elements/returnStatement";
 import { initMemberExpression } from "../elements/MemberExpression";
+import { initCallExpression } from "../elements/CallExpression";
 
 const normalizationIDENTIFIER = (parseContext: ParseContext) => {
   let node;
@@ -67,6 +68,18 @@ const parseSubscripts = (parseContext: ParseContext): Ast => {
 const parseSubscript = (parseContext: ParseContext, element: Ast) => {
   if (parseContext.eat(MachineType.DOT)) {
     return initMemberExpression(parseContext, element);
+  } else if (parseContext.eat(MachineType.LEFTPARENTHESES)) {
+    const args: Array<Ast> = [];
+    while (!parseContext.eat(MachineType.RIGHTPARENTHESES)) {
+      const element = parseExpression(parseContext, {
+        functionType: false,
+      });
+      if (element) {
+        args.push(element);
+      }
+      parseContext.eat(MachineType.COMMA);
+    }
+    return initCallExpression(element, args);
   }
   return element;
 };

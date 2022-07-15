@@ -1,6 +1,7 @@
-import { parseExpression } from "../parse/parseStatementOrExpression";
 import { ParseContext } from "../parse/parse";
 import { Ast } from "../share/types";
+import { initIdentifier } from "./Identifier";
+import { MachineType } from "../parse/MachineType";
 
 class MemberExpression implements Ast {
   type = "MemberExpression";
@@ -14,6 +15,8 @@ export const initMemberExpression = (
 ) => {
   const memberExpression = new MemberExpression();
   memberExpression.object = element;
-  memberExpression.property = parseExpression(parseContext);
+  const currentToken = parseContext.currentToken;
+  parseContext.expect(MachineType.IDENTIFIER);
+  memberExpression.property = initIdentifier(currentToken.value);
   return memberExpression;
 };
