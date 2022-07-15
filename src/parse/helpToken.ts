@@ -44,6 +44,8 @@ export const helpToken = (token: Token) => {
           return MachineType.LEFTPARENTHESES;
         case ")":
           return MachineType.RIGHTPARENTHESES;
+        case ".":
+          return MachineType.DOT;
       }
     default:
       throw `SyntaxError: Unexpected token ${token.value}`;

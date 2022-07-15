@@ -11,6 +11,7 @@ import { initArrayExpression } from "../elements/array";
 import { initFunctionDeclaration } from "../elements/function";
 import { initIfStatement } from "../elements/IfStatement";
 import { initReturnStatement } from "../elements/returnStatement";
+import { initMemberExpression } from "../elements/MemberExpression";
 
 const normalizationIDENTIFIER = (parseContext: ParseContext) => {
   let node;
@@ -25,33 +26,77 @@ const normalizationIDENTIFIER = (parseContext: ParseContext) => {
   return node;
 };
 
-export const parseExpression = (
+export const parseExpressionAndStatement = (
   parseContext: ParseContext,
   options = { functionType: true }
 ): Ast => {
   switch (parseContext.tokenType()) {
-    case MachineType.LEFTCURLYBRACES:
-      return initObjectExpression(parseContext);
+    case MachineType.FUNCTION:
+      return initFunctionDeclaration(parseContext, options.functionType);
+    case MachineType.IF:
+      return initIfStatement(parseContext);
+    case MachineType.RETURN:
+      return initReturnStatement(parseContext);
+  }
+};
+
+const parseSubscripts = (parseContext: ParseContext): Ast => {
+  const match = () => {
+    switch (parseContext.tokenType()) {
+      case MachineType.LEFTCURLYBRACES:
+        return initObjectExpression(parseContext);
+      case MachineType.LEFTSQUAREBRACKETS:
+        return initArrayExpression(parseContext);
+      case MachineType.IDENTIFIER:
+        const node = normalizationIDENTIFIER(parseContext);
+        parseContext.eat(MachineType.IDENTIFIER);
+        return node;
+    }
+  };
+  let result = match();
+  while (true) {
+    var element = parseSubscript(parseContext, result);
+    if (element === result) {
+      return element;
+    }
+    result = element;
+  }
+};
+
+const parseSubscript = (parseContext: ParseContext, element: Ast) => {
+  if (parseContext.eat(MachineType.DOT)) {
+    return initMemberExpression(parseContext, element);
+  }
+  return element;
+};
+
+export const parseExpression = (
+  parseContext: ParseContext,
+  options = { functionType: true }
+): Ast => {
+  const maybeExpressionAndStatement = parseExpressionAndStatement(
+    parseContext,
+    options
+  );
+  if (maybeExpressionAndStatement) {
+    return maybeExpressionAndStatement;
+  }
+  const result = parseSubscripts(parseContext);
+  if (result) {
+    return result;
+  }
+  switch (parseContext.tokenType()) {
     case MachineType.SEMICOLON:
       parseContext.eat(MachineType.SEMICOLON);
       break;
-    case MachineType.LEFTSQUAREBRACKETS:
-      return initArrayExpression(parseContext);
-    case MachineType.IDENTIFIER:
-      const node = normalizationIDENTIFIER(parseContext);
-      parseContext.eat(MachineType.IDENTIFIER);
-      return node;
-    case MachineType.IF:
-      return initIfStatement(parseContext);
-    case MachineType.FUNCTION:
-      return initFunctionDeclaration(parseContext, options.functionType);
     default:
       parseContext.unexpected();
       break;
   }
+  return null;
 };
 
-const parseExpressionStatement = (children: Array<Ast>) => {
+const parseMaybeSequence = (children: Array<Ast>) => {
   let node = children[0];
   if (children.length > 1) {
     node = initSequenceExpression(children);
@@ -63,6 +108,13 @@ export const parseStatement = (
   parseContext: ParseContext,
   options = { functionType: true }
 ): Ast => {
+  const maybeExpressionAndStatement = parseExpressionAndStatement(
+    parseContext,
+    options
+  );
+  if (maybeExpressionAndStatement) {
+    return maybeExpressionAndStatement;
+  }
   switch (parseContext.currentTokenType) {
     case MachineType.LET:
     case MachineType.VAR:
@@ -71,18 +123,12 @@ export const parseStatement = (
     case MachineType.SEMICOLON:
       parseContext.eat(MachineType.SEMICOLON);
       break;
-    case MachineType.FUNCTION:
-      return initFunctionDeclaration(parseContext, options.functionType);
-    case MachineType.IF:
-      return initIfStatement(parseContext);
-    case MachineType.RETURN:
-      return initReturnStatement(parseContext);
     default:
       const children: Array<Ast> = [];
       children.push(parseExpression(parseContext));
       while (parseContext.eat(MachineType.COMMA)) {
         children.push(parseExpression(parseContext));
       }
-      return parseExpressionStatement(children);
+      return parseMaybeSequence(children);
   }
 };

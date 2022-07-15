@@ -17,7 +17,8 @@ export enum MachineType {
   LEFTPARENTHESES = "(", //左圆括号
   RIGHTPARENTHESES = ")", //右圆括号
   IF = "if", //if关键字
-  RETURN = "return"// return 关键字
+  RETURN = "return",// return 关键字
+  DOT = ".",//点
 }
 
 export type Variable = MachineType.LET | MachineType.CONST | MachineType.VAR;

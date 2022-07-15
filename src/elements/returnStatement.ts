@@ -14,6 +14,6 @@ export const initReturnStatement = (parseContext: ParseContext) => {
   }
   const returnStatement = new ReturnStatement();
   parseContext.expect(MachineType.RETURN);
-  returnStatement.argument = parseExpression(parseContext) || null;
+  returnStatement.argument = parseExpression(parseContext);
   return returnStatement;
 };
