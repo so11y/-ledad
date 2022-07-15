@@ -23,6 +23,9 @@ export class ParseContext {
   }
 
   tokenType(token?: Token) {
+    if(!this.tokens.length){
+      return MachineType.EOF
+    }
     if (!token) token = this.tokens[0];
     return helpToken(token);
   }
@@ -96,7 +99,7 @@ export class ParseContext {
   }
 
   currentVarScope() {
-    for (var i = this.scopeStack.length - 1; ; i--) {
+    for (var i = this.scopeStack.length - 1;i >= 0  ; i--) {
       var scope = this.scopeStack[i];
       if (scope.flags > 1) {
         return scope;
@@ -124,9 +127,18 @@ export class ParseContext {
     throw new SyntaxError(message);
   }
 
-  expect(type: MachineType){
-    if(!this.eat(type)){
-      this.raise("Unexpected token");
+  expect(type: MachineType) {
+    if (!this.eat(type)) {
+      this.unexpected();
+    }
+  }
+  unexpected() {
+    this.raise("Unexpected token");
+  }
+
+  expectMachineType(type1: MachineType, type2: MachineType) {
+    if (type1 !== type2) {
+      this.unexpected();
     }
   }
 }
@@ -138,6 +150,7 @@ class Program implements Ast {
 export const parse = (tokens: Array<Token>): Program => {
   const program = new Program();
   const parseContext = new ParseContext(tokens);
+  console.log(parseContext.inFunction);
   while (parseContext.isOFEnd) {
     const element = parseStatement(parseContext);
     if (element) {

@@ -1,4 +1,5 @@
 export enum MachineType {
+  EOF = "eof",// token end
   LET = "let", //let 关键字
   VAR = "var", //var 关键字
   CONST = "const", //count 关键字

@@ -42,7 +42,7 @@ export const parseExpression = (
     case MachineType.FUNCTION:
       return initFunctionDeclaration(parseContext, options.functionType);
     default:
-      parseContext.raise(`什么情况?->>${parseContext.tokenType()}`);
+      parseContext.unexpected();
       break;
   }
 };

@@ -15,10 +15,14 @@ class Property implements Ast {
 }
 const initProperty = (parseContext: ParseContext) => {
   const property = new Property();
+  parseContext.expectMachineType(
+    parseContext.currentTokenType,
+    MachineType.IDENTIFIER
+  );
   property.key = parseExpression(parseContext);
-  parseContext.eat(MachineType.COLON);
-  property.value = parseExpression(parseContext,{
-    functionType:false
+  parseContext.expect(MachineType.COLON);
+  property.value = parseExpression(parseContext, {
+    functionType: false,
   });
   return property;
 };
