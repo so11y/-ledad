@@ -1,14 +1,14 @@
 import { initExpressionStatement } from "../elements/expressionStatement";
-import { initSequenceExpression } from "../elements/SequenceExpression";
+import { initSequenceExpression } from "../elements/sequence";
 import { initIdentifier } from "../elements/Identifier";
 import { Ast } from "../share/types";
 import { MachineType } from "./MachineType";
 import { ParseContext } from "./parse";
 import { initVariableDeclaration } from "../elements/VariableDeclaration";
 import { initLiteral } from "../elements/literal";
-import { initObjectExpression } from "../elements/objectExpression";
-import { initArrayExpression } from "../elements/arrayExpression";
-import { initFunctionDeclaration } from "../elements/functionDeclaration";
+import { initObjectExpression } from "../elements/object";
+import { initArrayExpression } from "../elements/array";
+import { initFunctionDeclaration } from "../elements/function";
 
 const normalizationIDENTIFIER = (parseContext: ParseContext) => {
   let node;

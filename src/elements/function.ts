@@ -2,7 +2,7 @@ import { parseExpression } from "../parse/parseStatementOrExpression";
 import { MachineType } from "../parse/MachineType";
 import { ParseContext } from "../parse/parse";
 import { Ast } from "../share/types";
-import { BlockStatement, initBlockStatement } from "./BlockStatement";
+import { BlockStatement, initBlockStatement } from "./block";
 
 class FunctionDeclaration implements Ast {
   type = "FunctionDeclaration";
