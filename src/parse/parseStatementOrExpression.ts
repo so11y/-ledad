@@ -13,8 +13,11 @@ import { initIfStatement } from "../elements/IfStatement";
 import { initReturnStatement } from "../elements/returnStatement";
 import { initMemberExpression } from "../elements/MemberExpression";
 import { initCallExpression } from "../elements/CallExpression";
-import { initBinaryExpression } from "../elements/binaryExpression";
+import { initBinaryExpression } from "../elements/binary";
 import { initLogicalExpression } from "../elements/logicalExpression";
+import { initWhileStatement } from "../elements/whileStatement";
+import { initBreakStatement } from "../elements/breakStatement";
+import { initAwaitExpression } from "../elements/await";
 
 const normalizationIDENTIFIER = (parseContext: ParseContext) => {
   let node;
@@ -34,12 +37,19 @@ const parseExpressionAndStatement = (
   options: ParseOptions
 ): Ast => {
   switch (parseContext.tokenType()) {
+    case MachineType.ASYNC:
     case MachineType.FUNCTION:
       return initFunctionDeclaration(parseContext, options.functionType);
     case MachineType.IF:
       return initIfStatement(parseContext);
     case MachineType.RETURN:
       return initReturnStatement(parseContext);
+    case MachineType.WHILE:
+      return initWhileStatement(parseContext);
+    case MachineType.BREAK:
+      return initBreakStatement(parseContext);
+    case MachineType.AWAIT:
+      return initAwaitExpression(parseContext);
   }
 };
 
@@ -73,8 +83,8 @@ const parseSubscripts = (
 const parseExpOp = (parseContext: ParseContext, left: Ast, prev = -1): Ast => {
   const opType = parseContext.currentTokenType;
   const [op, ll] = [
-    isOperation(parseContext.currentTokenType),
-    isLogical(parseContext.currentTokenType),
+    isOperation(parseContext.currentToken.value),
+    isLogical(parseContext.currentToken.value),
   ];
   //用于优先级判断
   //precedence 大于prev 那么就会深度去解析

@@ -43,7 +43,12 @@ export class ParseContext {
   }
 
   get inFunction() {
-    const scope = this.currentVarScope();
+    const scope = this.currentVarScope(2);
+    return scope ? true : false;
+  }
+
+  get inFor(){
+    const scope = this.currentVarScope(3);
     return scope ? true : false;
   }
 
@@ -98,10 +103,10 @@ export class ParseContext {
     };
   }
 
-  currentVarScope() {
+  currentVarScope(flags = 1) {
     for (var i = this.scopeStack.length - 1;i >= 0  ; i--) {
       var scope = this.scopeStack[i];
-      if (scope.flags > 1) {
+      if (scope.flags >= flags) {
         return scope;
       }
     }
@@ -158,3 +163,4 @@ export const parse = (tokens: Array<Token>): Program => {
   }
   return program;
 };
+

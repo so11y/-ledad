@@ -2,7 +2,7 @@ import { parse } from "./parse/parse";
 import { tokenizer } from "./parse/tokenizer";
 
 let tokens = tokenizer(`
-
-good.map(function (value){});
+await await 5;
 `);
+
 console.log(parse(tokens));

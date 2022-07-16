@@ -1,77 +1,78 @@
+import { RegisterType } from "../share/types";
 import { MachineType } from "./machineType";
-import { Token } from "./tokenizer";
+import { Token, TokenType } from "./tokenizer";
+
+const TokenTypeMap = new Map();
+export const registerType = (parentType: TokenType) => {
+  const op: RegisterType = {
+    register(key: string, type: MachineType) {
+      let getTypeMap;
+      if (!TokenTypeMap.has(parentType)) {
+        getTypeMap = new Map();
+        TokenTypeMap.set(parentType, getTypeMap);
+      } else {
+        getTypeMap = TokenTypeMap.get(parentType);
+      }
+      getTypeMap.set(key, type);
+      return this;
+    },
+    getType(key: string) {
+      return TokenTypeMap.get(parentType).get(key);
+    },
+  };
+  return op;
+};
 
 //这里可以改为跟babel一样的注册实现
 export const helpToken = (token: Token) => {
-  switch (token.type) {
-    case "name":
-    case "number":
-      switch (token.value) {
-        case "let":
-          return MachineType.LET;
-        case "const":
-          return MachineType.CONST;
-        case "var":
-          return MachineType.VAR;
-        case "function":
-          return MachineType.FUNCTION;
-        case "if":
-          return MachineType.IF;
-        case "return":
-          return MachineType.RETURN;
-        case "+":
-          return MachineType.ADD;
-        case "-":
-          return MachineType.SUB;
-        case "/":
-          return MachineType.DIV;
-        case "*":
-          return MachineType.MULTIPLY;
-        case "==":
-          return MachineType.EQUALLINGDUB;
-        case "===":
-          return MachineType.EQUALLINGDUBPP;
-        case "<":
-          return MachineType.LEFTARROWS;
-        case ">":
-          return MachineType.RIGHTARROWS;
-        case "&&":
-          return MachineType.AND;
-        case "||":
-          return MachineType.OR;
-        case "=":
-          return MachineType.EQUALLING;
-        case "!=":
-          return MachineType.OVERTURNAND;
-        case "!==":
-          return MachineType.OVERTURNANDS;
-        default:
-          return MachineType.IDENTIFIER;
-      }
-    case "symbol":
-      switch (token.value) {
-        case ";":
-          return MachineType.SEMICOLON;
-        case ",":
-          return MachineType.COMMA;
-        case "{":
-          return MachineType.LEFTCURLYBRACES;
-        case "}":
-          return MachineType.RIGHTCURLYBRACES;
-        case ":":
-          return MachineType.COLON;
-        case "[":
-          return MachineType.LEFTSQUAREBRACKETS;
-        case "]":
-          return MachineType.RIGHTSQUAREBRACKETS;
-        case "(":
-          return MachineType.LEFTPARENTHESES;
-        case ")":
-          return MachineType.RIGHTPARENTHESES;
-        case ".":
-          return MachineType.DOT;
-      }
-    default:
-      throw `SyntaxError: Unexpected token ${token.value}`;
+  if (token.type === "number") {
+    return MachineType.IDENTIFIER;
   }
+  const type = registerType(token.type as TokenType).getType(token.value);
+  if (type) {
+    return type;
+  }
+  if (token.type === "name" && !type) {
+    return MachineType.IDENTIFIER;
+  }
+  throw `SyntaxError: Unexpected token ${token.value}`;
 };
+
+const registerSymbol = registerType("symbol");
+const registerName = registerType("name");
+registerSymbol
+  .register(".", MachineType.DOT)
+  .register(")", MachineType.RIGHTPARENTHESES)
+  .register("(", MachineType.LEFTPARENTHESES)
+  .register("]", MachineType.RIGHTSQUAREBRACKETS)
+  .register("[", MachineType.LEFTSQUAREBRACKETS)
+  .register(":", MachineType.COLON)
+  .register("}", MachineType.RIGHTCURLYBRACES)
+  .register("{", MachineType.LEFTCURLYBRACES)
+  .register(",", MachineType.COMMA)
+  .register(";", MachineType.SEMICOLON);
+
+registerName
+  .register("!==", MachineType.BINARY)
+  .register("===", MachineType.BINARY)
+  .register("==", MachineType.BINARY)
+  .register("!=", MachineType.BINARY)
+  .register("*", MachineType.BINARY)
+  .register("/", MachineType.BINARY)
+  .register("-", MachineType.BINARY)
+  .register("+", MachineType.BINARY)
+  .register("<", MachineType.BINARY)
+  .register(">", MachineType.BINARY)
+  .register("=", MachineType.EQUALLING)
+  .register("&&", MachineType.LOGICAL)
+  .register("||", MachineType.LOGICAL)
+  .register("if", MachineType.IF)
+  .register("return", MachineType.RETURN)
+  .register("function", MachineType.FUNCTION)
+  .register("let", MachineType.LET)
+  .register("var", MachineType.VAR)
+  .register("const", MachineType.CONST)
+  .register("while", MachineType.WHILE)
+  .register("break", MachineType.BREAK)
+  .register("async", MachineType.ASYNC)
+  .register("await", MachineType.AWAIT)

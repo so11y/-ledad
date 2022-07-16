@@ -1,4 +1,7 @@
-import { parseExpression, parseMaybeUnary } from "../parse/parseStatementOrExpression";
+import {
+  parseExpression,
+  parseMaybeUnary,
+} from "../parse/parseStatementOrExpression";
 import { MachineType } from "../parse/machineType";
 import { ParseContext } from "../parse/parse";
 import { Ast } from "../share/types";
@@ -32,10 +35,13 @@ export const initFunctionDeclaration = (
   const _function = createFunction(type);
   const parentScope = parseContext.currentScope();
   parseContext.enterScope(2);
+  if (parseContext.eat(MachineType.ASYNC)) {
+    _function.async = true;
+  }
   parseContext.expect(MachineType.FUNCTION);
   if (parseContext.currentTokenType === MachineType.IDENTIFIER) {
-    _function.id = parseMaybeUnary(parseContext,{
-      breakCall:true
+    _function.id = parseMaybeUnary(parseContext, {
+      breakCall: true,
     }) as Identifier;
     parentScope.addFunctionScope(_function.id.name);
   }

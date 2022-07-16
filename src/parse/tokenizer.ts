@@ -10,6 +10,7 @@ interface ParseToken {
     addToken: (v: Omit<Token, "type">) => void;
   };
 }
+export type TokenType = "name"|"number"|"string"|"symbol";
 export interface Token {
   type: string;
   value: string;
