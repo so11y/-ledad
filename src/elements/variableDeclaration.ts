@@ -1,6 +1,6 @@
 import { ParseContext } from "../parse/parse";
-import { parseExpression } from "../parse/parseStatementOrExpression";
-import { MachineType, Variable } from "../parse/MachineType";
+import { parseExpression, parseMaybeUnary } from "../parse/parseStatementOrExpression";
+import { MachineType, Variable } from "../parse/machineType";
 import { Ast } from "../share/types";
 import { Identifier } from "./Identifier";
 
@@ -16,7 +16,7 @@ class VariableDeclarator implements Ast {
 }
 const initVariableDeclarator = (parseContext: ParseContext, kind: Variable) => {
   const variableDeclarator = new VariableDeclarator();
-  variableDeclarator.id = parseExpression(parseContext);
+  variableDeclarator.id = parseMaybeUnary(parseContext);
   parseContext.expect(MachineType.EQUALLING);
   variableDeclarator.init = parseExpression(parseContext);
   if (variableDeclarator.id instanceof Identifier) {

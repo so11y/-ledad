@@ -1,5 +1,5 @@
 import { parseStatement } from "../parse/parseStatementOrExpression";
-import { MachineType } from "../parse/MachineType";
+import { MachineType } from "../parse/machineType";
 import { ParseContext } from "../parse/parse";
 import { Ast } from "../share/types";
 

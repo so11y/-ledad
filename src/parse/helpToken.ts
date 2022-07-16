@@ -1,4 +1,4 @@
-import { MachineType } from "./MachineType";
+import { MachineType } from "./machineType";
 import { Token } from "./tokenizer";
 
 //这里可以改为跟babel一样的注册实现
@@ -19,13 +19,37 @@ export const helpToken = (token: Token) => {
           return MachineType.IF;
         case "return":
           return MachineType.RETURN;
+        case "+":
+          return MachineType.ADD;
+        case "-":
+          return MachineType.SUB;
+        case "/":
+          return MachineType.DIV;
+        case "*":
+          return MachineType.MULTIPLY;
+        case "==":
+          return MachineType.EQUALLINGDUB;
+        case "===":
+          return MachineType.EQUALLINGDUBPP;
+        case "<":
+          return MachineType.LEFTARROWS;
+        case ">":
+          return MachineType.RIGHTARROWS;
+        case "&&":
+          return MachineType.AND;
+        case "||":
+          return MachineType.OR;
+        case "=":
+          return MachineType.EQUALLING;
+        case "!=":
+          return MachineType.OVERTURNAND;
+        case "!==":
+          return MachineType.OVERTURNANDS;
         default:
           return MachineType.IDENTIFIER;
       }
     case "symbol":
       switch (token.value) {
-        case "=":
-          return MachineType.EQUALLING;
         case ";":
           return MachineType.SEMICOLON;
         case ",":

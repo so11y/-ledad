@@ -2,6 +2,7 @@ import { parse } from "./parse/parse";
 import { tokenizer } from "./parse/tokenizer";
 
 let tokens = tokenizer(`
-a.tostring().c.toString(1,2,3)
+
+good.map(function (value){});
 `);
 console.log(parse(tokens));

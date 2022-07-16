@@ -1,3 +1,8 @@
 export interface Ast {
-  type:string;
+  type: string;
+}
+
+export interface ParseOptions {
+  functionType?: boolean;
+  breakCall?: boolean;
 }

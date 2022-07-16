@@ -1,8 +1,8 @@
 import { initExpressionStatement } from "../elements/expressionStatement";
 import { initSequenceExpression } from "../elements/sequence";
 import { initIdentifier } from "../elements/Identifier";
-import { Ast } from "../share/types";
-import { MachineType } from "./MachineType";
+import { Ast, ParseOptions } from "../share/types";
+import { isLogical, isOperation, MachineType, Operation } from "./machineType";
 import { ParseContext } from "./parse";
 import { initVariableDeclaration } from "../elements/VariableDeclaration";
 import { initLiteral } from "../elements/literal";
@@ -13,6 +13,8 @@ import { initIfStatement } from "../elements/IfStatement";
 import { initReturnStatement } from "../elements/returnStatement";
 import { initMemberExpression } from "../elements/MemberExpression";
 import { initCallExpression } from "../elements/CallExpression";
+import { initBinaryExpression } from "../elements/binaryExpression";
+import { initLogicalExpression } from "../elements/logicalExpression";
 
 const normalizationIDENTIFIER = (parseContext: ParseContext) => {
   let node;
@@ -29,7 +31,7 @@ const normalizationIDENTIFIER = (parseContext: ParseContext) => {
 
 const parseExpressionAndStatement = (
   parseContext: ParseContext,
-  options = { functionType: true }
+  options: ParseOptions
 ): Ast => {
   switch (parseContext.tokenType()) {
     case MachineType.FUNCTION:
@@ -41,7 +43,10 @@ const parseExpressionAndStatement = (
   }
 };
 
-const parseSubscripts = (parseContext: ParseContext): Ast => {
+const parseSubscripts = (
+  parseContext: ParseContext,
+  options: ParseOptions
+): Ast => {
   const match = () => {
     switch (parseContext.tokenType()) {
       case MachineType.LEFTCURLYBRACES:
@@ -56,7 +61,7 @@ const parseSubscripts = (parseContext: ParseContext): Ast => {
   };
   let result = match();
   while (true) {
-    var element = parseSubscript(parseContext, result);
+    var element = parseSubscript(parseContext, result, options);
     if (element === result) {
       return element;
     }
@@ -64,14 +69,56 @@ const parseSubscripts = (parseContext: ParseContext): Ast => {
   }
 };
 
-//用于parse一系列的操作符
-const parseSubscript = (parseContext: ParseContext, element: Ast) => {
+//用于parse 后缀符号
+const parseExpOp = (parseContext: ParseContext, left: Ast, prev = -1): Ast => {
+  const opType = parseContext.currentTokenType;
+  const [op, ll] = [
+    isOperation(parseContext.currentTokenType),
+    isLogical(parseContext.currentTokenType),
+  ];
+  //用于优先级判断
+  //precedence 大于prev 那么就会深度去解析
+  //a && b > c;
+  //因为这里要优先把 (b > c) 树先组织好
+  //如果正常的不存在交错的话,就是解析流程
+  let precedence = (op ? 2 : false || ll ? 1 : false) || -1;
+  if (precedence <= prev) {
+    return left;
+  }
+  if (op || ll) {
+    const initFun = op ? initBinaryExpression : initLogicalExpression;
+    parseContext.expect(parseContext.currentTokenType);
+    const right = parseExpOp(
+      parseContext,
+      parseMaybeUnary(parseContext),
+      precedence
+    );
+    if (!right) {
+      parseContext.unexpected();
+    }
+    const binaryExpression = initFun(left, right, opType as any);
+    return parseExpOp(parseContext, binaryExpression);
+  }
+
+  return left;
+};
+
+//用于parse一系列后缀的操作符
+const parseSubscript = (
+  parseContext: ParseContext,
+  element: Ast,
+  options: ParseOptions
+) => {
   if (parseContext.eat(MachineType.DOT)) {
     return initMemberExpression(parseContext, element);
-  } else if (parseContext.eat(MachineType.LEFTPARENTHESES)) {
+  } else if (
+    !options.breakCall &&
+    parseContext.eat(MachineType.LEFTPARENTHESES)
+  ) {
     const args: Array<Ast> = [];
     while (!parseContext.eat(MachineType.RIGHTPARENTHESES)) {
       const element = parseExpression(parseContext, {
+        ...options,
         functionType: false,
       });
       if (element) {
@@ -92,10 +139,10 @@ const parseMaybeSequence = (children: Array<Ast>) => {
   return initExpressionStatement(node);
 };
 
-export const parseExpression = (
+export const parseMaybeUnary = (
   parseContext: ParseContext,
-  options = { functionType: true }
-): Ast => {
+  options: ParseOptions = { functionType: true, breakCall: false }
+) => {
   const maybeExpressionAndStatement = parseExpressionAndStatement(
     parseContext,
     options
@@ -103,7 +150,7 @@ export const parseExpression = (
   if (maybeExpressionAndStatement) {
     return maybeExpressionAndStatement;
   }
-  const result = parseSubscripts(parseContext);
+  const result = parseSubscripts(parseContext, options);
   if (result) {
     return result;
   }
@@ -115,12 +162,22 @@ export const parseExpression = (
       parseContext.unexpected();
       break;
   }
+};
+
+export const parseExpression = (
+  parseContext: ParseContext,
+  options: ParseOptions = { functionType: true, breakCall: false }
+): Ast => {
+  const element = parseMaybeUnary(parseContext, options);
+  if (element) {
+    return parseExpOp(parseContext, element);
+  }
   return null;
 };
 
 export const parseStatement = (
   parseContext: ParseContext,
-  options = { functionType: true }
+  options: ParseOptions = { functionType: true, breakCall: false }
 ): Ast => {
   const maybeExpressionAndStatement = parseExpressionAndStatement(
     parseContext,
@@ -139,9 +196,9 @@ export const parseStatement = (
       break;
     default:
       const children: Array<Ast> = [];
-      children.push(parseExpression(parseContext));
+      children.push(parseExpression(parseContext, options));
       while (parseContext.eat(MachineType.COMMA)) {
-        children.push(parseExpression(parseContext));
+        children.push(parseExpression(parseContext, options));
       }
       return parseMaybeSequence(children);
   }

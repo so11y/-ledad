@@ -1,7 +1,7 @@
 import { ParseContext } from "../parse/parse";
 import { Ast } from "../share/types";
 import { initIdentifier } from "./Identifier";
-import { MachineType } from "../parse/MachineType";
+import { MachineType } from "../parse/machineType";
 
 class MemberExpression implements Ast {
   type = "MemberExpression";

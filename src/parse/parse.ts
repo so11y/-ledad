@@ -1,6 +1,6 @@
 import { Ast } from "../share/types";
 import { helpToken } from "./helpToken";
-import { MachineType, Variable } from "./MachineType";
+import { MachineType, Variable } from "./machineType";
 import { parseStatement } from "./parseStatementOrExpression";
 import { Token } from "./tokenizer";
 

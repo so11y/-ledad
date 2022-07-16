@@ -1,5 +1,5 @@
-import { parseExpression } from "../parse/parseStatementOrExpression";
-import { MachineType } from "../parse/MachineType";
+import { parseExpression, parseMaybeUnary } from "../parse/parseStatementOrExpression";
+import { MachineType } from "../parse/machineType";
 import { ParseContext } from "../parse/parse";
 import { Ast } from "../share/types";
 import { BlockStatement, initBlockStatement } from "./block";
@@ -34,7 +34,9 @@ export const initFunctionDeclaration = (
   parseContext.enterScope(2);
   parseContext.expect(MachineType.FUNCTION);
   if (parseContext.currentTokenType === MachineType.IDENTIFIER) {
-    _function.id = parseExpression(parseContext) as Identifier;
+    _function.id = parseMaybeUnary(parseContext,{
+      breakCall:true
+    }) as Identifier;
     parentScope.addFunctionScope(_function.id.name);
   }
   parseContext.expect(MachineType.LEFTPARENTHESES);
