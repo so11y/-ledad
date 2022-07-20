@@ -1,8 +1,13 @@
 import { parse } from "./parse/parse";
 import { tokenizer } from "./parse/tokenizer";
 
-let tokens = tokenizer(`
-await await 5;
-`);
+//{aa as soso,qq as pp,a1 }
+const token =  tokenizer("const a = '1'.to.go(1,2)")
 
-console.log(parse(tokens));
+console.log(parse(token));
+
+
+`
+
+
+`

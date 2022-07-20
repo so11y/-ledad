@@ -1,6 +1,6 @@
 import { Ast } from "../share/types";
 
-class Literal implements Ast {
+export class Literal implements Ast {
   type = "literal";
   value: string;
 }

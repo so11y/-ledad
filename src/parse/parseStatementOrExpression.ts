@@ -18,6 +18,7 @@ import { initLogicalExpression } from "../elements/logicalExpression";
 import { initWhileStatement } from "../elements/whileStatement";
 import { initBreakStatement } from "../elements/breakStatement";
 import { initAwaitExpression } from "../elements/await";
+import { initImportDeclaration } from "../elements/ImportDeclaration";
 
 const normalizationIDENTIFIER = (parseContext: ParseContext) => {
   let node;
@@ -50,6 +51,8 @@ const parseExpressionAndStatement = (
       return initBreakStatement(parseContext);
     case MachineType.AWAIT:
       return initAwaitExpression(parseContext);
+    case MachineType.IMPORT:
+      return initImportDeclaration(parseContext);
   }
 };
 
@@ -81,6 +84,9 @@ const parseSubscripts = (
 
 //用于parse 后缀符号
 const parseExpOp = (parseContext: ParseContext, left: Ast, prev = -1): Ast => {
+  if(!parseContext.currentToken){
+    return left;
+  }
   const opType = parseContext.currentTokenType;
   const [op, ll] = [
     isOperation(parseContext.currentToken.value),

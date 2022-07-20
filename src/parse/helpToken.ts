@@ -25,7 +25,7 @@ export const registerType = (parentType: TokenType) => {
 
 //这里可以改为跟babel一样的注册实现
 export const helpToken = (token: Token) => {
-  if (token.type === "number") {
+  if (token.type === "number" || token.type === "string") {
     return MachineType.IDENTIFIER;
   }
   const type = registerType(token.type as TokenType).getType(token.value);
@@ -76,3 +76,4 @@ registerName
   .register("break", MachineType.BREAK)
   .register("async", MachineType.ASYNC)
   .register("await", MachineType.AWAIT)
+  .register("import", MachineType.IMPORT)

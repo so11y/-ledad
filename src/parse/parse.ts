@@ -29,6 +29,9 @@ export class ParseContext {
     if (!token) token = this.tokens[0];
     return helpToken(token);
   }
+  shift(){
+    this.tokens.shift();
+  }
 
   get currentTokenType() {
     return this.tokenType();
@@ -114,7 +117,7 @@ export class ParseContext {
 
   eat(type: MachineType) {
     if (this.currentTokenType === type) {
-      this.tokens.shift();
+      this.shift();
       return true;
     } else {
       return false;

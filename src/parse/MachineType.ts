@@ -28,7 +28,8 @@ export enum MachineType {
   WHILE = "WHILE",
   BREAK = "break",
   ASYNC = "async",
-  AWAIT = "await"
+  AWAIT = "await",
+  IMPORT =  "import",
 }
 export type Variable = MachineType.LET | MachineType.CONST | MachineType.VAR;
 
