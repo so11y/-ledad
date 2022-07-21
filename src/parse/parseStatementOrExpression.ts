@@ -55,8 +55,6 @@ const parseExpressionAndStatement = (
       return initAwaitExpression(parseContext);
     case MachineType.IMPORT:
       return initImportDeclaration(parseContext);
-    case MachineType.LEFTCURLYBRACES:
-      return initBlockStatement(parseContext);
   }
 };
 
