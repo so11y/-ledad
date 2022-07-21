@@ -77,3 +77,4 @@ registerName
   .register("async", MachineType.ASYNC)
   .register("await", MachineType.AWAIT)
   .register("import", MachineType.IMPORT)
+  .register("export", MachineType.EXPORT)

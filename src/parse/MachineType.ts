@@ -30,6 +30,7 @@ export enum MachineType {
   ASYNC = "async",
   AWAIT = "await",
   IMPORT =  "import",
+  EXPORT = "export"
 }
 export type Variable = MachineType.LET | MachineType.CONST | MachineType.VAR;
 

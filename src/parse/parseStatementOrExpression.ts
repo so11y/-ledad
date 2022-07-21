@@ -19,6 +19,8 @@ import { initWhileStatement } from "../elements/whileStatement";
 import { initBreakStatement } from "../elements/breakStatement";
 import { initAwaitExpression } from "../elements/await";
 import { initImportDeclaration } from "../elements/ImportDeclaration";
+import { initExportNamedDeclaration } from "../elements/export";
+import { initBlockStatement } from "../elements/block";
 
 const normalizationIDENTIFIER = (parseContext: ParseContext) => {
   let node;
@@ -53,6 +55,8 @@ const parseExpressionAndStatement = (
       return initAwaitExpression(parseContext);
     case MachineType.IMPORT:
       return initImportDeclaration(parseContext);
+    case MachineType.LEFTCURLYBRACES:
+      return initBlockStatement(parseContext);
   }
 };
 
@@ -210,6 +214,8 @@ export const parseStatement = (
     case MachineType.SEMICOLON:
       parseContext.eat(MachineType.SEMICOLON);
       break;
+    case MachineType.EXPORT:
+      return initExportNamedDeclaration(parseContext)
     default:
       const children: Array<Ast> = [];
       children.push(parseExpression(parseContext, options));

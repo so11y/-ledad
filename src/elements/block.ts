@@ -10,6 +10,7 @@ export class BlockStatement implements Ast {
 
 export const initBlockStatement = (parseContext: ParseContext) => {
   const blockStatement = new BlockStatement();
+  parseContext.enterScope(1);
   parseContext.expect(MachineType.LEFTCURLYBRACES);
   while (!parseContext.eat(MachineType.RIGHTCURLYBRACES)) {
     const node = parseStatement(parseContext);
@@ -17,5 +18,6 @@ export const initBlockStatement = (parseContext: ParseContext) => {
       blockStatement.body.push(node);
     }
   }
+  parseContext.exitScope();
   return blockStatement;
 };
