@@ -20,7 +20,6 @@ import { initBreakStatement } from "../elements/breakStatement";
 import { initAwaitExpression } from "../elements/await";
 import { initImportDeclaration } from "../elements/ImportDeclaration";
 import { initExportNamedDeclaration } from "../elements/export";
-import { initBlockStatement } from "../elements/block";
 
 const normalizationIDENTIFIER = (parseContext: ParseContext) => {
   let node;
@@ -70,6 +69,8 @@ const parseSubscripts = (
         return initArrayExpression(parseContext);
       case MachineType.IDENTIFIER:
         const node = normalizationIDENTIFIER(parseContext);
+        node.start = parseContext.currentToken.start;
+        node.end = parseContext.currentToken.end;
         parseContext.eat(MachineType.IDENTIFIER);
         return node;
     }
@@ -86,7 +87,7 @@ const parseSubscripts = (
 
 //用于parse 后缀符号
 const parseExpOp = (parseContext: ParseContext, left: Ast, prev = -1): Ast => {
-  if(!parseContext.currentToken){
+  if (!parseContext.currentToken) {
     return left;
   }
   const opType = parseContext.currentTokenType;
@@ -213,7 +214,7 @@ export const parseStatement = (
       parseContext.eat(MachineType.SEMICOLON);
       break;
     case MachineType.EXPORT:
-      return initExportNamedDeclaration(parseContext)
+      return initExportNamedDeclaration(parseContext);
     default:
       const children: Array<Ast> = [];
       children.push(parseExpression(parseContext, options));

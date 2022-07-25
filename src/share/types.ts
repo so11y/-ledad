@@ -2,6 +2,8 @@ import { MachineType } from "../parse/machineType";
 
 export interface Ast {
   type: string;
+  start: number;
+  end: number;
 }
 
 export interface ParseOptions {

@@ -4,6 +4,8 @@ import { ParseContext } from "../parse/parse";
 import { Ast } from "../share/types";
 
 export class BlockStatement implements Ast {
+  start: number;
+  end: number;
   type = "BlockStatement";
   body: Array<Ast> = [];
 }
@@ -11,6 +13,7 @@ export class BlockStatement implements Ast {
 export const initBlockStatement = (parseContext: ParseContext) => {
   const blockStatement = new BlockStatement();
   parseContext.enterScope(1);
+  blockStatement.start = parseContext.currentToken.start
   parseContext.expect(MachineType.LEFTCURLYBRACES);
   while (!parseContext.eat(MachineType.RIGHTCURLYBRACES)) {
     const node = parseStatement(parseContext);
@@ -18,6 +21,7 @@ export const initBlockStatement = (parseContext: ParseContext) => {
       blockStatement.body.push(node);
     }
   }
+  blockStatement.end = parseContext.prevToken.end;
   parseContext.exitScope();
   return blockStatement;
 };

@@ -18,19 +18,20 @@ class Scope {
 
 export class ParseContext {
   scopeStack: Array<Scope> = [];
+  prevToken: Token;
   constructor(private tokens: Array<Token>) {
     this.enterScope(1);
   }
 
   tokenType(token?: Token) {
-    if(!this.isOFEnd){
-      return MachineType.EOF
+    if (!this.isOFEnd) {
+      return MachineType.EOF;
     }
     if (!token) token = this.tokens[0];
     return helpToken(token);
   }
-  shift(){
-    this.tokens.shift();
+  shift() {
+    this.prevToken = this.tokens.shift();
   }
 
   get currentTokenType() {
@@ -50,7 +51,7 @@ export class ParseContext {
     return scope ? true : false;
   }
 
-  get inFor(){
+  get inFor() {
     const scope = this.currentVarScope(3);
     return scope ? true : false;
   }
@@ -107,7 +108,7 @@ export class ParseContext {
   }
 
   currentVarScope(flags = 1) {
-    for (var i = this.scopeStack.length - 1;i >= 0  ; i--) {
+    for (var i = this.scopeStack.length - 1; i >= 0; i--) {
       var scope = this.scopeStack[i];
       if (scope.flags >= flags) {
         return scope;
@@ -150,7 +151,9 @@ export class ParseContext {
     }
   }
 }
-class Program implements Ast {
+export class Program implements Ast {
+  start: number;
+  end: number;
   type = "Program";
   body: Array<Ast> = [];
 }
@@ -166,4 +169,3 @@ export const parse = (tokens: Array<Token>): Program => {
   }
   return program;
 };
-

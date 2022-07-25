@@ -1,6 +1,8 @@
 import { Ast } from "../share/types";
 
 export class Literal implements Ast {
+  start: number;
+  end: number;
   type = "literal";
   value: string;
 }

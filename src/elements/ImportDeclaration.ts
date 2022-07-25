@@ -6,6 +6,8 @@ import { Identifier } from "./Identifier";
 import { initLiteral, Literal } from "./literal";
 
 class ImportDeclaration implements Ast {
+  start: number;
+  end: number;
   type = "ImportDeclaration";
   callee: Ast;
   specifiers: Array<Ast> = [];
@@ -13,15 +15,21 @@ class ImportDeclaration implements Ast {
 }
 
 class ImportDefaultSpecifier implements Ast {
+  start: number;
+  end: number;
   type = "ImportDefaultSpecifier";
   local: Identifier;
 }
 class ImportNamespaceSpecifier implements Ast {
+  start: number;
+  end: number;
   type = "ImportNamespaceSpecifier";
   local: Identifier;
 }
 
 class ImportSpecifier implements Ast {
+  start: number;
+  end: number;
   type = "ImportSpecifier";
   imported: Identifier;
   local: Identifier;
@@ -34,20 +42,26 @@ const initImportSpecifier = (parseContext: ParseContext) => {
   importSpecifier.local = importSpecifier.imported = parseExpression(
     parseContext
   ) as Identifier;
+  importSpecifier.start = importSpecifier.local.start;
   if (parseContext.currentToken.value === "as") {
     parseContext.eat(MachineType.IDENTIFIER);
     importSpecifier.local = parseExpression(parseContext) as Identifier;
   }
+  importSpecifier.end = importSpecifier.local.end;
   return importSpecifier;
 };
 const initImportDefaultSpecifier = (parseContext: ParseContext) => {
   const importDefaultSpecifier = new ImportDefaultSpecifier();
+  importDefaultSpecifier.start = parseContext.currentToken.start;
   importDefaultSpecifier.local = parseExpression(parseContext) as Identifier;
+  importDefaultSpecifier.end = importDefaultSpecifier.local.end;
   return importDefaultSpecifier;
 };
 const initImportNamespaceSpecifier = (parseContext: ParseContext) => {
   const importNamespaceSpecifier = new ImportNamespaceSpecifier();
+  importNamespaceSpecifier.start = parseContext.currentToken.start;
   importNamespaceSpecifier.local = parseExpression(parseContext) as Identifier;
+  importNamespaceSpecifier.end = importNamespaceSpecifier.local.end;
   return importNamespaceSpecifier;
 };
 
@@ -56,6 +70,8 @@ export const initImportDeclaration = (parseContext: ParseContext) => {
   parseContext.expect(MachineType.IMPORT);
   if (parseContext.currentToken.type === "string") {
     importDeclaration.source = initLiteral(parseContext.currentToken.value);
+    importDeclaration.source.start = parseContext.currentToken.start;
+    importDeclaration.source.end = parseContext.currentToken.end;
     parseContext.shift();
   } else {
     let isHaveDefault = false;
@@ -99,6 +115,8 @@ export const initImportDeclaration = (parseContext: ParseContext) => {
     ) {
       if (parseContext.currentToken.type === "string") {
         importDeclaration.source = initLiteral(parseContext.currentToken.value);
+        importDeclaration.source.start = parseContext.currentToken.start;
+        importDeclaration.source.end = parseContext.currentToken.end;
         parseContext.shift();
       }
     } else {

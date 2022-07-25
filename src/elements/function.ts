@@ -9,6 +9,8 @@ import { BlockStatement, initBlockStatement } from "./block";
 import { Identifier } from "./Identifier";
 
 class FunctionDeclaration implements Ast {
+  start: number;
+  end: number;
   type = "FunctionDeclaration";
   id: Identifier;
   expression = false;
@@ -35,6 +37,7 @@ export const initFunctionDeclaration = (
   const _function = createFunction(type);
   const parentScope = parseContext.currentScope();
   parseContext.enterScope(2);
+  _function.start = parseContext.currentToken.start;
   if (parseContext.eat(MachineType.ASYNC)) {
     _function.async = true;
   }
@@ -52,6 +55,7 @@ export const initFunctionDeclaration = (
     parseContext.eat(MachineType.COMMA);
   }
   _function.body = initBlockStatement(parseContext);
+  _function.end = _function.body.end;
   parseContext.exitScope();
   return _function;
 };

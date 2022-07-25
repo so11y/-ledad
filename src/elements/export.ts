@@ -5,6 +5,8 @@ import { Ast } from "../share/types";
 import { initIdentifier } from "./Identifier";
 
 export class ExportNamedDeclaration implements Ast {
+  start: number;
+  end: number;
   type = "ExportNamedDeclaration";
   declaration: Ast;
   specifiers: Array<Ast>;
@@ -18,6 +20,7 @@ export const initExportNamedDeclaration = (parseContext: ParseContext) => {
     );
   }
   const exportNamedDeclaration = new ExportNamedDeclaration();
+  exportNamedDeclaration.start = parseContext.prevToken.start;
   const whiteTokenKind = [
     MachineType.ASYNC,
     MachineType.FUNCTION,
@@ -49,5 +52,6 @@ export const initExportNamedDeclaration = (parseContext: ParseContext) => {
   } else {
     parseContext.unexpected();
   }
+  exportNamedDeclaration.end = parseContext.prevToken.end
   return exportNamedDeclaration;
 };
