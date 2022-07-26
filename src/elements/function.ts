@@ -8,7 +8,7 @@ import { Ast } from "../share/types";
 import { BlockStatement, initBlockStatement } from "./block";
 import { Identifier } from "./Identifier";
 
-class FunctionDeclaration implements Ast {
+export class FunctionDeclaration implements Ast {
   start: number;
   end: number;
   type = "FunctionDeclaration";

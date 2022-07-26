@@ -5,34 +5,49 @@ import { Ast } from "../share/types";
 import { Identifier } from "./Identifier";
 import { initLiteral, Literal } from "./literal";
 
-class ImportDeclaration implements Ast {
+export class ImportDeclaration implements Ast {
   start: number;
   end: number;
   type = "ImportDeclaration";
   callee: Ast;
-  specifiers: Array<Ast> = [];
+  specifiers: Array<ImportSpecifier|ImportNamespaceSpecifier|ImportNamespaceSpecifier> = [];
   source: Literal;
+
+  static isImportDeclaration(node:Record<string,any>):node is ImportDeclaration{
+    return node.type === "ImportDeclaration" && node instanceof ImportDeclaration;
+  }
 }
 
-class ImportDefaultSpecifier implements Ast {
+export class ImportDefaultSpecifier implements Ast {
   start: number;
   end: number;
   type = "ImportDefaultSpecifier";
   local: Identifier;
+  static isImportDefaultSpecifier(node:Record<string,any>):node is ImportDefaultSpecifier{
+    return node.type === "ImportDefaultSpecifier" && node instanceof ImportDefaultSpecifier;
+  }
 }
-class ImportNamespaceSpecifier implements Ast {
+export class ImportNamespaceSpecifier implements Ast {
   start: number;
   end: number;
   type = "ImportNamespaceSpecifier";
   local: Identifier;
+
+  static isImportNamespaceSpecifier(node:Record<string,any>):node is ImportNamespaceSpecifier{
+    return node.type === "ImportNamespaceSpecifier" && node instanceof ImportNamespaceSpecifier;
+  }
 }
 
-class ImportSpecifier implements Ast {
+export class ImportSpecifier implements Ast {
   start: number;
   end: number;
   type = "ImportSpecifier";
   imported: Identifier;
   local: Identifier;
+
+  static isImportSpecifier(node:Record<string,any>):node is ImportSpecifier{
+    return node.type === "ImportSpecifier" && node instanceof ImportSpecifier;
+  }
 }
 const initImportSpecifier = (parseContext: ParseContext) => {
   const importSpecifier = new ImportSpecifier();

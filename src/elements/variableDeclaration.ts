@@ -7,19 +7,35 @@ import { MachineType, Variable } from "../parse/machineType";
 import { Ast } from "../share/types";
 import { Identifier } from "./Identifier";
 
-class VariableDeclaration implements Ast {
+export class VariableDeclaration implements Ast {
   start: number;
   end: number;
   type = "VariableDeclaration";
-  declarations: Array<Ast> = [];
+  declarations: Array<VariableDeclarator> = [];
   kind: Variable;
+
+  static isVariableDeclaration(
+    node: Record<string, any>
+  ): node is VariableDeclaration {
+    return (
+      node.type === "VariableDeclaration"
+    );
+  }
 }
-class VariableDeclarator implements Ast {
+export class VariableDeclarator implements Ast {
   start: number;
   end: number;
   type = "VariableDeclarator";
   id: Ast;
   init: Ast;
+
+  static isVariableDeclarator(
+    node: Record<string, any>
+  ): node is VariableDeclaration {
+    return (
+      node.type === "VariableDeclarator" && node instanceof VariableDeclarator
+    );
+  }
 }
 const initVariableDeclarator = (parseContext: ParseContext, kind: Variable) => {
   const variableDeclarator = new VariableDeclarator();

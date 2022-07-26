@@ -1,6 +1,6 @@
 import { MachineType } from "../parse/machineType";
 
-export interface Ast {
+export class Ast {
   type: string;
   start: number;
   end: number;

@@ -3,13 +3,18 @@ import { MachineType } from "../parse/machineType";
 import { ParseContext } from "../parse/parse";
 import { Ast } from "../share/types";
 import { initIdentifier } from "./Identifier";
+import { FunctionDeclaration } from "./function";
+import { VariableDeclaration } from "./VariableDeclaration";
 
 export class ExportNamedDeclaration implements Ast {
   start: number;
   end: number;
   type = "ExportNamedDeclaration";
-  declaration: Ast;
+  declaration: FunctionDeclaration|VariableDeclaration;
   specifiers: Array<Ast>;
+  static isExportNamedDeclaration(node:Record<string,any>):node is ExportNamedDeclaration{
+    return node.type === "ExportNamedDeclaration" && node instanceof ExportNamedDeclaration;
+  }
 }
 
 export const initExportNamedDeclaration = (parseContext: ParseContext) => {
@@ -29,7 +34,7 @@ export const initExportNamedDeclaration = (parseContext: ParseContext) => {
     MachineType.CONST,
   ];
   if (whiteTokenKind.some((v) => v === parseContext.currentTokenType)) {
-    exportNamedDeclaration.declaration = parseStatement(parseContext);
+    exportNamedDeclaration.declaration = parseStatement(parseContext) as any;
   } else if (parseContext.eat(MachineType.LEFTCURLYBRACES)) {
     exportNamedDeclaration.specifiers = [];
     while (!parseContext.eat(MachineType.RIGHTCURLYBRACES)) {
