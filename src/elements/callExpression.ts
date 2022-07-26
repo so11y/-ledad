@@ -1,4 +1,3 @@
-import { ParseContext } from "../parse/parse";
 import { Ast } from "../share/types";
 
 class CallExpression implements Ast {
@@ -14,6 +13,6 @@ export const initCallExpression = (element: Ast, argument: Array<Ast>) => {
   callExpression.start = element.start;
   callExpression.callee = element;
   callExpression.arguments = argument;
-  callExpression.end = argument.at(-1).end;
+  callExpression.end = argument.at(-1).end + 1;
   return callExpression;
 };

@@ -21,6 +21,8 @@ export const initMemberExpression = (
   const currentToken = parseContext.currentToken;
   parseContext.expect(MachineType.IDENTIFIER);
   memberExpression.property = initIdentifier(currentToken.value);
+  memberExpression.property.start = parseContext.prevToken.start
+  memberExpression.property.end = parseContext.prevToken.end
   memberExpression.end = memberExpression.property.end;
   return memberExpression;
 };
