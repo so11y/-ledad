@@ -68,6 +68,7 @@ const initImportNamespaceSpecifier = (parseContext: ParseContext) => {
 export const initImportDeclaration = (parseContext: ParseContext) => {
   const importDeclaration = new ImportDeclaration();
   parseContext.expect(MachineType.IMPORT);
+  importDeclaration.start = parseContext.prevToken.start;
   if (parseContext.currentToken.type === "string") {
     importDeclaration.source = initLiteral(parseContext.currentToken.value);
     importDeclaration.source.start = parseContext.currentToken.start;
@@ -122,6 +123,7 @@ export const initImportDeclaration = (parseContext: ParseContext) => {
     } else {
       parseContext.unexpected();
     }
+    importDeclaration.end = importDeclaration.source.end;
   }
   return importDeclaration;
 };
